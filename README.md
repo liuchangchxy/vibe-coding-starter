@@ -49,8 +49,8 @@ flowchart TD
 - 规则永久沉淀进系统提示词，真正做到“吃一堑长一智”，绝不再犯同类错误。
 
 ### 3. 引擎三：物理级双层防倒退锁 (`TESTING.md`)
-- **本地门禁 (`.git/hooks/pre-commit`)**：每次在本地执行 `git commit` 时自动秒级跑测试，测试红灯物理拒绝提交；
-- **远端门禁 (`.github/workflows/ci.yml`)**：向 GitHub 提 PR 或 Push 时在干净虚拟机矩阵上回归测试，杜绝“带病合入”。
+- **本地门禁 (`.git/hooks/pre-commit`)**：跨平台（Unix/Windows CRLF 免杀）纯 Unix LF 解释器兼容；支持 Python (.venv 自动探测与 pytest 回退)、Node.js (`npm test`)、Go (`go test`)、Rust (`cargo test`)；每次 `git commit` 秒级跑测，测试红灯物理拒绝提交；
+- **远端门禁 (`templates/ci.yml`)**：一键激活 GitHub Actions，在干净虚拟机矩阵上回归测试，杜绝“带病合入”。
 
 ---
 
@@ -64,10 +64,11 @@ flowchart TD
 git clone <你的新项目仓库地址>
 cd <你的新项目文件夹>
 
-# 一键安装本地 pre-commit 提交硬门禁 (跨平台支持)
+# 一键安装本地 pre-commit 提交硬门禁 (跨平台支持，纯 LF 防炸裂)
 python scripts/setup-hooks.py
-# (Linux/macOS 用户亦可运行: sh scripts/setup-hooks.sh)
-# (Windows 用户亦可直接双击: scripts/setup-hooks.bat)
+
+# 💡 提示：若希望同时激活 GitHub Actions 远端 CI，可加上 --enable-ci 参数：
+# python scripts/setup-hooks.py --enable-ci
 ```
 
 ### 第三步：一句话唤醒 AI 开始 Vibe Coding！
@@ -81,13 +82,13 @@ python scripts/setup-hooks.py
 
 | 资产文件 | 作用与定位 |
 | :--- | :--- |
-| **`AGENTS.md`** | **AI 核心宪法**：约束 AI 自动改 SPEC、自动记避坑教训、强制跑测试 |
+| **`AGENTS.md`** | **AI 核心宪法**：约束 AI 自动改 SPEC、自动记避坑教训、强制跑测试、禁止 `--no-verify` |
 | **`SPEC.md`** | **单一真理源 (SSOT)**：记录系统功能、数据流向、接口契约与边界条件 |
 | **`DECISIONS.md`** | **决策账本**：记录“为什么改需求”的微日志时间线 (Lightweight ADR) |
 | **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”与防退化三道防线 |
 | **`.cursorrules`** | **多 IDE 兼容**：让 Cursor 等编辑器原生对齐本套工作流 |
-| **`scripts/setup-hooks.py`**| **本地门禁安装器**：一键写入 `.git/hooks/pre-commit` |
-| **`.github/workflows/ci.yml`**| **GitHub Actions CI**：远端持续集成全量测试工作流 |
+| **`scripts/setup-hooks.py`**| **本地门禁安装器**：一键写入 `.git/hooks/pre-commit` (支持虚拟环境与多语言) |
+| **`templates/ci.yml`** | **GitHub Actions CI 模版**：远端持续集成全量测试工作流模版 |
 | **`tests/test_smoke.py`** | **基准冒烟测试**：保证开箱即通 (100% Green Out of the Box) |
 
 ---
