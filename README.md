@@ -108,7 +108,10 @@ python scripts/setup-hooks.py
 | **`scripts/checkpoint.py`** | **秒级快照管理器**：提供无损保存与一键还原后悔药 |
 | **`.devcontainer/`** | **气密开发容器**：VSCode / Cursor 官方标准化沙盒开发环境 |
 | **`DECISIONS.md`** | **决策账本**：记录“为什么改需求”的微日志时间线 (Lightweight ADR) |
-| **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”与防退化双层物理门禁 |
+| **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”与防退化双层物理门禁 + DoD 收敛停止准则 |
+| **`EXECUTION.md`** | **多代理执行工序**：简报/报告/diff 审查包、Fix 循环、阶段终审、Rulings 裁定披露（含规模旋钮与宿主适配） |
+| **`REVIEWING.md`** | **对抗性审查配方**：空转测试、边界数学、证据链倒挂、自证向量、跨端键一致性五攻击法 |
+| **`ARCHITECTURE.md`** | **顶层架构推导法**：七步法 + “改得便宜/用得难错/坏了能看见”三判据 + 抄/造分层判据 |
 | **`.cursorrules`** | **多 IDE 兼容**：让 Cursor 等编辑器原生对齐本套工作流 |
 | **`scripts/setup-hooks.py`**| **本地门禁安装器**：一键写入 `.git/hooks/pre-commit` (支持虚拟环境与多语言) |
 | **`templates/ci.yml`** | **GitHub Actions CI 模版**：远端持续集成全量测试工作流模版 |
