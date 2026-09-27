@@ -53,6 +53,19 @@ def save_checkpoints(store: Path, checkpoints: list[dict]):
     store.write_text(json.dumps(checkpoints, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def _stash_refs(root: Path) -> list[str]:
+    """Return current stash refs (stash@{0}, ...) so we can detect a new one."""
+    res = subprocess.run(
+        ["git", "stash", "list", "--format=%gd"],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    return [line.strip() for line in res.stdout.splitlines() if line.strip()]
+
+
 def cmd_save(message: str = ""):
     root = get_git_root()
     store = get_checkpoint_store(root)
@@ -151,23 +164,47 @@ def cmd_restore(target_id: int | None = None):
     commit_sha = target["commit"]
     print(f"Restoring checkpoint #{target['id']} ({commit_sha[:8]} - '{target['message']}')...")
 
-    # Safety check: stash current dirty state if any before restoring
-    subprocess.run(["git", "stash", "save", "-u", f"Pre-restore safety auto-stash at {time.strftime('%Y-%m-%d %H:%M:%S')}"], cwd=str(root), capture_output=True)
+    # Safety net: capture the current worktree (incl. untracked) so nothing is
+    # silently destroyed by the rollback. Record which stash we created so it can
+    # be named back to the user — a "safety" stash nobody can find is not a safety net.
+    safety_stash_ref = None
+    before_list = _stash_refs(root)
+    stash_msg = f"vibe-checkpoint pre-restore safety ({time.strftime('%Y-%m-%d %H:%M:%S')})"
+    subprocess.run(
+        ["git", "stash", "push", "-u", "-m", stash_msg],
+        cwd=str(root), capture_output=True,
+        text=True, encoding="utf-8", errors="replace",
+    )
+    after_list = _stash_refs(root)
+    new_refs = [r for r in after_list if r not in before_list]
+    if new_refs:
+        safety_stash_ref = safety_stash_ref or new_refs[0]
 
-    # Check out files from the checkpoint commit
+    # Roll the worktree back to the checkpoint.
+    # `git checkout <sha> -- .` only overwrites/restores paths that exist in the
+    # checkpoint; files added afterwards would survive as orphans, so the reset
+    # has to be explicit about removals too.
     res = subprocess.run(
-        ["git", "checkout", commit_sha, "--", "."],
+        ["git", "read-tree", "-u", "--reset", commit_sha],
         cwd=str(root),
         capture_output=True,
         text=True,
         encoding="utf-8",
-        errors="replace"
+        errors="replace",
     )
 
     if res.returncode == 0:
         print(f"[SUCCESS] Restored project state to checkpoint #{target['id']}: '{target['message']}'")
+        print("[NOTE] Worktree content now matches the checkpoint exactly (added-after files removed).")
+        if safety_stash_ref:
+            print(f"[SAFETY] Your pre-restore worktree was saved first: {safety_stash_ref}")
+            print(f"         Recover it with: git stash apply {safety_stash_ref}")
+        else:
+            print("[SAFETY] Worktree was clean before restore; nothing needed saving.")
     else:
         print(f"[ERROR] Restore failed: {res.stderr}")
+        if safety_stash_ref:
+            print(f"[SAFETY] Your pre-restore worktree is intact in: {safety_stash_ref}")
         sys.exit(1)
 
 
