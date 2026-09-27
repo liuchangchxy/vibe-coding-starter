@@ -114,11 +114,13 @@ python scripts/setup-hooks.py
 | **`docs/optional/`** | **按需扩展**：数据安全、可靠性和多 Agent 规范；小项目无需启用 |
 | **`.agents/skills/sdd-implementation/`** | **通用 SDD Skill**：把确认范围、测试、实现、验证和证据更新串成最小节拍 |
 | **`EXECUTION.md`** | **多代理执行工序**：简报/报告/diff 审查包、Fix 循环、阶段终审、Rulings 裁定披露（含规模旋钮与宿主适配） |
-| **`REVIEWING.md`** | **对抗性审查配方**：空转测试、边界数学、证据链倒挂、自证向量、跨端键一致性五攻击法 |
+| **`REVIEWING.md`** | **对抗性审查配方**：空转测试、边界数学、证据链倒挂、自证向量、跨端键一致性、缓存死水穿透六攻击法 |
 | **`ARCHITECTURE.md`** | **顶层架构推导法**：七步法 + “改得便宜/用得难错/坏了能看见”三判据 + 抄/造分层判据 |
 | **`.cursorrules`** | **多 IDE 兼容**：让 Cursor 等编辑器原生对齐本套工作流 |
 | **`scripts/setup-hooks.py`**| **本地门禁安装器**：一键写入 `.git/hooks/pre-commit` (支持虚拟环境与多语言) |
 | **`templates/ci.yml`** | **GitHub Actions CI 模版**：远端持续集成全量测试工作流模版 |
+| **`tests/visual_smoke/web_smoke.py`** | **Web 冒烟判定门**：零依赖（仅标准库 + Chrome）静态服务 → CDP 截图 → 数颜色/着墨比，白屏即红；先过四道正身信号再判“不白” |
+| **`scripts/check_version_consistency.py`** | **版本防漂移守卫**：单真理源 + 手抄标记清单，不一致即红灯；自带 `--selftest` 红色实证 |
 | **`tests/test_smoke.py`** | **基准冒烟测试**：保证开箱即通 (100% Green Out of the Box) |
 
 ---

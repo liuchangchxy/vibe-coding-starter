@@ -61,7 +61,7 @@
 
 > **范例**：CI 发布工作流“启动即死、0 job” → 根因链：secret 存了二进制原文 → GitHub 要求 UTF-8 → 工作流引用即校验失败 → 修复：`base64 < 文件 | gh secret set` 重设 → 验证：重跑 run 出现全部 job → 防复发：模板 README 注明“secret 只存文本（base64），永不存二进制”。
 
-**可选配方（有版本号/状态多处同步的项目才用）**：CI 加一条一致性 grep（pubspec 版本 vs 文档版本不一致即红灯），把“防漂移”从自觉变自动。
+**可选配方（有版本号/状态多处同步的项目才用）**：CI 加一条一致性 grep（pubspec 版本 vs 文档版本不一致即红灯），把“防漂移”从自觉变自动。可运行实现见 `scripts/check_version_consistency.py`（单真理源 + `--check` 标记清单 + `--tag` 发布门 + `--selftest` 红色实证），用法见文件头。
 
 ---
 

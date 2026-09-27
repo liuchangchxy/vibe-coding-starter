@@ -18,6 +18,13 @@
 
 ## 历史决策流
 
+### [2026-09-27] DaySpark v0.25.1 两件可运行实现回流 starter
+- **触发背景**：starter 的“冒烟正身信号”（TESTING §6 / visual_smoke README）与“CI grep 版本号”（EXECUTION §5）只有文字配方，没有能跑的代码；DaySpark v0.25.1 实战沉淀了两件零依赖实现（`tool/web_smoke.dart`、`tool/check_version_consistency.sh`）。
+- **核心决策**：翻成通用版回流 —— `tests/visual_smoke/web_smoke.py`（仅标准库 + Chrome：静态服务 + 自写最小 CDP 客户端 + 手写 PNG 解码 + 颜色/着墨比判定；Flutter 默认映射经三处 flag 可配到任意 SPA）与 `scripts/check_version_consistency.py`（`--source` 单真理源 + 可重复 `--check` + `--tag` + `--forbid` + `--selftest`）。两者自带 `--selftest`（TESTING 铁律 6），且 web_smoke 另有真 Chrome 正-反-正实证（有内容 621 色 PASS / 空白 1 色 FAIL）。
+- **对应 SPEC 章节**：不涉及业务规范，属工程执行层。
+- **影响范围**：新增两文件 + README 表格两行 + EXECUTION §5 配方指针 + visual_smoke README 判定门章节；另顺手修 README 表格 REVIEWING 行“五攻击法”→“六攻击法”（5bfa785 加配方 6 后的漂移）。
+
+
 ### [2026-09-22] 仓库脚手架初始化
 - **触发背景**：创建 Vibe Coding Starter 通用规范模板。
 - **核心决策**：确立 SDD（规范驱动）+ 双层门禁 + 自进化避坑清单为核心工作流。

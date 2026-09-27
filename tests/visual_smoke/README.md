@@ -9,6 +9,20 @@
 1. **机器判白屏**：截图唯一颜色数 <= 1，或有效像素占比过低 → 红灯（可在 CI 跑）。
 2. **人眼/AI 并排评审**：把截图并排放（参考实现、竞品、上一版），评"好不好看"——这层机器测不了，见 TESTING.md 测试层级第 6 条。
 
+## 判定门（`web_smoke.py`，CI 可直接挂）
+
+`shot.mjs` 只管截图；`web_smoke.py`（仅标准库 + Chrome，无需 npm/pip）把“截图 → 判定 → 退出码”做成一扇门：
+
+```bash
+python tests/visual_smoke/web_smoke.py --dir dist \
+  --bootstrap-markers boot.js --main-candidates main.js \
+  --host-selectors '#root' --screenshot shots/home.png
+```
+
+三处框架映射（默认值是 Flutter，见文件头注释的 React/纯 SPA 对照表）：引导标记 `--bootstrap-markers`、主载荷 `--main-candidates`、宿主挂载点 `--host-selectors`。判据两层：正身信号（产物自检 → 主框架文档 2xx/304 → 主脚本加载 → 宿主元素存在）先行，白屏判据（唯一颜色数 / 着墨比）随后；任一层不过即退出码 1。`--selftest` 跑 PNG 编解码往返 + 判空/判有 + 非 App 目录拒绝（没红过的门禁视为不存在）。
+
+实测证据（2026-09-27，真 Chrome 正-反-正）：有内容页 621 色 / 着墨 21% → PASS；空白页 1 色 → FAIL 报“unique colours 1 < 2”。
+
 ## 正身信号（"不白"必须配"是我的"）
 
 只判"不白"会放过"有内容的非 App 页"（实战先例：错误占位页有内容、非纯白，纯颜色判据直接放行）。
