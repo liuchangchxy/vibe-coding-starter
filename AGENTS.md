@@ -50,7 +50,10 @@ When the user asks to "converge", "do a final review", or "confirm shippability"
 
 When the user **corrects, criticizes, or states a working preference** ("don't touch that config", "no full-screen test output", "prefer pure functions"):
 
-1. **Append to the lessons list** — the AI must proactively edit this file (`AGENTS.md`), appending a negative constraint to the **Lessons Learned** section below.
+1. **Route the correction to its home** — do not dump everything in one list:
+   - a **technical pitfall about this codebase** ("don't touch that config", "that call truncates silently") → [`docs/CONSTRAINTS.md`](docs/CONSTRAINTS.md), under the matching domain, with **Why** and **Date**;
+   - a **working preference about AI behavior** ("don't run tests full-screen", "prefer pure functions") → this file, appended to the **Lessons Learned** section below;
+   - a **business rule** → `SPEC.md`; an **architectural decision** → `docs/DECISIONS.md`.
 2. From the next interaction onward, that rule is loaded as an inviolable red line.
 
 ---

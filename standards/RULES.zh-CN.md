@@ -25,6 +25,8 @@
 | 产品业务规则 | `SPEC.md` | 只引用 |
 | 决策与原因 | `docs/DECISIONS.md` | 只引用 |
 | 需求 ↔ 证据状态 | `docs/REQUIREMENTS_TRACEABILITY.md` | 只引用 |
+| 本代码库的技术坑 | `docs/CONSTRAINTS.md` | 只引用 |
+| 接续入口 / 未做事项 | `docs/START_HERE.md` | 只引用 |
 
 **不变量**：`SPEC.md` 说*做什么*，`standards/` 说*怎么做工程*，`docs/` 记*发生过什么*。一条规则只出现在这三者中的一个。
 
@@ -60,6 +62,8 @@
 | A-20 | 测试层级不得互相冒充 | `AGENTS.md` | 纪律 |
 | A-21 | UI 类模糊评价走五维清单，产出改/不改选择题 | `AGENTS.md` | 纪律 |
 | A-22 | 冻结需求的备选调研属探索，结论不写入 SPEC | `AGENTS.md` | 纪律 |
+| A-23 | 纠错分流：技术坑进 CONSTRAINTS.md，行为偏好进 AGENTS.md | `AGENTS.md` | `check_docs.py` |
+| A-24 | 新会话先读接续入口 | `AGENTS.md` | `check_docs.py` |
 
 ### A-L — 避坑清单（`AGENTS.md` 末尾 25 条）
 
@@ -109,6 +113,10 @@
 | T-12 | 界面主题与端侧预算门禁（按需） | `standards/TESTING.md` | 纪律 |
 | T-13 | 异步与偶发失败排查（按需） | `standards/TESTING.md` | 纪律 |
 | T-14 | 收敛交付标准：P0/P1 清零 + 测试 100% + `skipped=0` | `standards/TESTING.md` | 纪律 |
+| T-15 | 正交验证：验证手段独立于做事手段 | `standards/TESTING.md` | 纪律 |
+| T-16 | 溯源验收：依据原文，不依据 todo 列表 | `standards/TESTING.md` | 纪律 |
+| T-17 | 漂移守卫：一个真理源，其余副本设门禁，未设防项要声明 | `standards/TESTING.md` | 纪律 |
+| T-18 | 棘轮基线：只许收紧的存量债务 | `standards/TESTING.md` | 纪律 |
 
 ### R — 审查配方（`standards/REVIEWING.md`）
 

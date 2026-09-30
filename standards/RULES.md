@@ -25,6 +25,8 @@ Read this before editing any rule. If a rule lives here, **edit it here and nowh
 | Product rules | `SPEC.md` | link only |
 | Decisions and their reasons | `docs/DECISIONS.md` | link only |
 | Requirement ↔ evidence status | `docs/REQUIREMENTS_TRACEABILITY.md` | link only |
+| Technical pitfalls in this codebase | `docs/CONSTRAINTS.md` | link only |
+| Resume entry / outstanding work | `docs/START_HERE.md` | link only |
 
 **The invariant**: `SPEC.md` says *what to build*, `standards/` says *how to build it*, `docs/` records *what happened*. A rule appears in exactly one of those three.
 
@@ -60,6 +62,8 @@ Read this before editing any rule. If a rule lives here, **edit it here and nowh
 | A-20 | Test layers must not impersonate one another | `AGENTS.md` | discipline |
 | A-21 | Vague UI feedback becomes a five-dimension change/don't-change ballot | `AGENTS.md` | discipline |
 | A-22 | Research on a frozen requirement is exploration; findings stay out of SPEC | `AGENTS.md` | discipline |
+| A-23 | Route corrections: technical pitfalls to CONSTRAINTS.md, behaviour to AGENTS.md | `AGENTS.md` | `check_docs.py` |
+| A-24 | A new session reads the resume entry point first | `AGENTS.md` | `check_docs.py` |
 
 ### A-L — Lessons learned (`AGENTS.md` lessons list)
 
@@ -109,6 +113,10 @@ Read this before editing any rule. If a rule lives here, **edit it here and nowh
 | T-12 | Theme and constrained-viewport gate (gated) | `standards/TESTING.md` | discipline |
 | T-13 | Async and flaky failure triage (opt-in) | `standards/TESTING.md` | discipline |
 | T-14 | Definition of Done: P0/P1 cleared, suite 100%, `skipped=0` | `standards/TESTING.md` | discipline |
+| T-15 | Orthogonal verification: the means of verifying is independent of the means of doing | `standards/TESTING.md` | discipline |
+| T-16 | Traceability to the source text; accept against the original, not the task list | `standards/TESTING.md` | discipline |
+| T-17 | Drift guard: one source of truth, every other copy gated, ungated items declared | `standards/TESTING.md` | discipline |
+| T-18 | Ratchet baseline: debt that may only shrink | `standards/TESTING.md` | discipline |
 
 ### R — Review recipes (`standards/REVIEWING.md`)
 

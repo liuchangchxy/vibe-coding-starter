@@ -117,7 +117,9 @@ python tooling/checks/setup-hooks.py
 │   └── LOCALIZATION.md              本地化与视觉主题架构
 │
 ├── docs/                            你的项目记录
+│   ├── START_HERE.md                接续入口：新会话先读它
 │   ├── DECISIONS.md                 轻量 ADR 时间线
+│   ├── CONSTRAINTS.md               本代码库的技术坑（Why + Date）
 │   ├── REQUIREMENTS_TRACEABILITY.md 需求 ↔ 证据矩阵
 │   ├── optional/                    按需启用的扩展规范
 │   └── templates/                   工作模板（计划 / 证据 / OSS 审计）
@@ -145,6 +147,8 @@ python tooling/checks/setup-hooks.py
 | 加/改一条门禁 | 先 `standards/TESTING.md`，再 `standards/RULES.md` | `tooling/checks/*` |
 | 加一种界面语言或主题 | `standards/LOCALIZATION.md` | `tooling/checks/check_docs.py` |
 | 教 AI 一条教训 | `AGENTS.md`（避坑清单） | — |
+| 记一个本代码库的坑 | `docs/CONSTRAINTS.md` | — |
+| 开一个新会话 | `docs/START_HERE.md` | — |
 
 ---
 

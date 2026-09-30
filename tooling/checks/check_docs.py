@@ -49,9 +49,19 @@ def tracked_markdown() -> list[Path]:
 
 
 def heading_skeleton(path: Path) -> list[str]:
-    """The sequence of heading levels, e.g. ['#','##','###','###','##']."""
+    """The sequence of heading levels, e.g. ['#','##','###','###','##'].
+
+    Fenced code blocks are skipped: a leading '#' inside a fence is a shell
+    comment, not a heading, and counting it makes the gate cry wolf.
+    """
     skeleton = []
+    in_fence = False
     for line in path.read_text(encoding="utf-8").splitlines():
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
         if re.match(r"^#{1,6} ", line):
             skeleton.append(line.split(" ")[0])
     return skeleton
@@ -140,6 +150,12 @@ def _selftest() -> int:
         got = check_bilingual([d / "drift.md"])
         if not any("heading count differs" in p for p in got):
             failures.append("failed to flag a heading-count mismatch between mirrors")
+
+        # COMPLIANT: a '#' inside a fenced block is a shell comment, not a heading.
+        (d / "fence.md").write_text("# T\n\n```bash\n# a comment\n```\n\n## A\n", encoding="utf-8")
+        (d / "fence.zh-CN.md").write_text("# T\n\n```bash\n# 注释\n```\n\n## A\n", encoding="utf-8")
+        if check_bilingual([d / "fence.md"]):
+            failures.append("false positive on a shell comment inside a fenced block")
 
         # COMPLIANT: matching pair -> must stay silent.
         (d / "ok.md").write_text("# T\n\n## A\n", encoding="utf-8")

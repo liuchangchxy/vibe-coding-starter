@@ -117,7 +117,9 @@ The tree is **layered by responsibility**. Anything convention-bound (README, AG
 │   └── LOCALIZATION.md              i18n + theming architecture
 │
 ├── docs/                            Your project's records
+│   ├── START_HERE.md                Resume entry: read this first in a new session
 │   ├── DECISIONS.md                 Lightweight ADR timeline
+│   ├── CONSTRAINTS.md               Technical pitfalls of this codebase (Why + Date)
 │   ├── REQUIREMENTS_TRACEABILITY.md Requirement ↔ evidence matrix
 │   ├── optional/                    Capability-gated extensions
 │   └── templates/                   Working templates (plan, evidence, OSS audit)
@@ -145,6 +147,8 @@ The tree is **layered by responsibility**. Anything convention-bound (README, AG
 | Add or change a gate | `standards/TESTING.md`, then `standards/RULES.md` | `tooling/checks/*` |
 | Add a UI language or theme | `standards/LOCALIZATION.md` | `tooling/checks/check_docs.py` |
 | Teach the agent a lesson | `AGENTS.md` (Lessons Learned) | — |
+| Record a pitfall in this codebase | `docs/CONSTRAINTS.md` | — |
+| Start a new session | `docs/START_HERE.md` | — |
 
 ---
 
