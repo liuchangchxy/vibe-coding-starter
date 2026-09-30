@@ -45,6 +45,38 @@ class TestSmoke(unittest.TestCase):
         specs_dir = self.root / "specs"
         self.assertTrue(specs_dir.is_dir(), "specs/ directory must exist.")
 
+    def test_sponsor_and_faq_templates_exist(self):
+        """Verify SPONSOR.md and FAQ.md templates exist."""
+        sponsor_file = self.root / "templates" / "SPONSOR.md"
+        faq_file = self.root / "templates" / "FAQ.md"
+        self.assertTrue(sponsor_file.exists(), "templates/SPONSOR.md must exist.")
+        self.assertTrue(faq_file.exists(), "templates/FAQ.md must exist.")
+
+    def test_i18n_and_theme_architecture_template_exists(self):
+        """Verify I18N_AND_THEME_ARCHITECTURE.md template exists."""
+        arch_file = self.root / "templates" / "I18N_AND_THEME_ARCHITECTURE.md"
+        self.assertTrue(arch_file.exists(), "templates/I18N_AND_THEME_ARCHITECTURE.md must exist.")
+
+    def test_guard_scripts_exist(self):
+        """Verify anti-tampering and path scan guard scripts exist."""
+        tamper_script = self.root / "scripts" / "guard_test_tampering.py"
+        path_script = self.root / "scripts" / "scan_hardcoded_paths.py"
+        self.assertTrue(tamper_script.exists(), "scripts/guard_test_tampering.py must exist.")
+        self.assertTrue(path_script.exists(), "scripts/scan_hardcoded_paths.py must exist.")
+
+    def test_no_hardcoded_paths_in_starter(self):
+        """Verify the starter repository itself has zero hardcoded absolute paths."""
+        import subprocess
+        res = subprocess.run(
+            ["python", str(self.root / "scripts" / "scan_hardcoded_paths.py")],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace"
+        )
+        self.assertEqual(res.returncode, 0, f"Hardcoded path scan failed: {res.stderr}\n{res.stdout}")
+
 
 if __name__ == "__main__":
     unittest.main()
+

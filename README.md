@@ -102,13 +102,18 @@ python scripts/setup-hooks.py
 
 | 资产文件 | 作用与定位 |
 | :--- | :--- |
-| **`AGENTS.md`** | **AI 核心宪法**：约束 AI 自动改 SPEC、歧义反问、防篡改测试、自动避坑 |
+| **`AGENTS.md`** | **AI 核心宪法**：约束 AI 自动改 SPEC、1变4根因发散、防测试篡改、双语与路径底线 |
 | **`SPEC.md`** | **单一真理源 (SSOT)**：支持单体到模块分片的渐进式架构规范模板 |
 | **`specs/`** | **分片规约插槽**：承载大型系统细分子模块 Spec 的专属目录 |
+| **`templates/I18N_AND_THEME_ARCHITECTURE.md`** | **双语与主题架构**：五层穿透全双语、开源 Lint 门禁与零闪烁暗黑模式规约 |
+| **`templates/SPONSOR.md`** | **开源赞助模版**：国内/国际多渠道赞助与鸣谢墙标准化模版 |
+| **`templates/FAQ.md`** | **排查指南模版**：常见问题解答与跨平台避坑标准化模版 |
 | **`scripts/checkpoint.py`** | **秒级快照管理器**：提供无损保存与一键还原后悔药 |
+| **`scripts/guard_test_tampering.py`** | **防测试篡改守卫**：物理检测 Git 变更中对既有测试断言的删除与篡改 |
+| **`scripts/scan_hardcoded_paths.py`** | **硬编码路径扫描器**：静态扫描源码中的物理绝对路径，保障跨机器可移植性 |
 | **`.devcontainer/`** | **气密开发容器**：VSCode / Cursor 官方标准化沙盒开发环境 |
 | **`DECISIONS.md`** | **决策账本**：记录“为什么改需求”的微日志时间线 (Lightweight ADR) |
-| **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”、测试层级、证据报告与 DoD 收敛停止准则 |
+| **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”、1变4排查、防测试篡改与物理门禁 |
 | **`docs/REQUIREMENTS_TRACEABILITY.md`** | **需求追踪矩阵**：分离“需求存在”与“功能已验证”，记录源码、测试和实际运行证据 |
 | **`docs/templates/`** | **可复制模板**：计划、测试证据和 OSS 复用审计模板 |
 | **`docs/optional/`** | **按需扩展**：数据安全、可靠性和多 Agent 规范；小项目无需启用 |
