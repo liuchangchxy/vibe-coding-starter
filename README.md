@@ -154,12 +154,16 @@ The tree is **layered by responsibility**. Anything convention-bound (README, AG
 
 ## 🌐 Bilingual policy
 
-Every Markdown document exists in **two mirrored files**:
+**Nine documents are mirrored**, and those are the ones worth mirroring — the front door, the constitution, the product contract, and the standards:
+
+`README`, `AGENTS`, `SPEC`, and everything under `standards/`.
 
 - `NAME.md` — **English** (the default, so GitHub renders it)
 - `NAME.zh-CN.md` — **简体中文**
 
-Both are first-class. Chinese is the authoring source; English mirrors it. `tooling/checks/check_docs.py` fails CI if a document exists in only one language, so neither side can silently rot.
+Chinese is the authoring source; English mirrors it. `tooling/checks/check_docs.py` fails CI if one of these exists in only one language, or if the two drift structurally.
+
+**Everything else stays single-language** (`docs/`, `templates/`, `specs/`, `tooling/`). Translating every working template doubled the maintenance and blocked ordinary edits for no reader. `init_project.py --no-doc-gate` drops the gate entirely for projects that don't want it.
 
 ---
 

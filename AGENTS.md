@@ -62,14 +62,14 @@ When the user **corrects, criticizes, or states a working preference** ("don't t
 
 1. **Single source of truth** — [SPEC.md](SPEC.md) is the final standard for any business change. Code is only the materialization of the spec.
 2. **Non-destructive operations** — Never physically delete existing data or overwrite protected system configuration without explicit user permission.
-3. **Anti-test-tampering** — Never manufacture a green suite by relaxing assertions, deleting cases, commenting out assertions, or marking tests skipped. Implementation adapts to tests, never the reverse. Physical detector: `tooling/checks/guard_test_tampering.py`.
-4. **No hardcoded absolute paths** — Never write a developer machine's absolute path (`C:\Users\...`, `/home/...`) into source. Derive paths from the current file's location or inject them via environment variables. Detector: `tooling/checks/scan_hardcoded_paths.py`.
+3. **Anti-test-tampering** — never manufacture a green suite. Implementation adapts to tests, never the reverse. Full gate: `standards/TESTING.md` §1.2.
+4. **No hardcoded absolute paths** — derive paths from the current file's location or inject them via environment variables. Full gate: `standards/TESTING.md` §1.3.
 5. **Localization and visual theming are first-class** — see [standards/LOCALIZATION.md](standards/LOCALIZATION.md).
    - *Interaction localization (applies to anything with user-facing output)*: zero hardcoded natural-language copy; servers must never concatenate human-readable sentences — return structured codes like `{"error_code": "CODE", "params": {...}}`; dictionaries must be key-for-key aligned (Key Parity). Pure low-level libraries with no interaction are exempt.
    - *Visual theming (only for projects with a GUI/Web/mobile surface; pure CLI/backend exempt)*: semantic design tokens only, never raw color values in components; entry points must configure anti-flicker (Zero FOUC).
 6. **Standard open-source deliverables** — open-source projects must ship [templates/SPONSOR.md](templates/SPONSOR.md) and [templates/FAQ.md](templates/FAQ.md).
-7. **Delivery must be green** — after changing code, run the tests proactively. Never commit a sick tree.
-8. **Mandatory end-to-end verification** — never rely on mock unit tests alone. Changes touching a full flow, persistence, or a critical data path must run the corresponding real-link verification. Never report `skipped` as passing.
+7. **Delivery must be green** — never commit a sick tree. Stop condition: `standards/TESTING.md` §3.
+8. **Mandatory end-to-end verification** — mocks alone never prove a user path. Full gate: `standards/TESTING.md` §1.10.
 
 ---
 

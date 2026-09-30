@@ -154,12 +154,16 @@ python tooling/checks/setup-hooks.py
 
 ## 🌐 双语策略
 
-每份 Markdown 文档都有**两个镜像文件**：
+**只有九份文档做镜像**，而这九份正是值得做的——门面、宪法、产品契约、规范：
+
+`README`、`AGENTS`、`SPEC`，以及 `standards/` 下的全部。
 
 - `NAME.md` —— **英文**（默认正本，GitHub 直接渲染这一个）
 - `NAME.zh-CN.md` —— **简体中文**
 
-两者都是一等公民。中文是撰写源，英文与之镜像。`tooling/checks/check_docs.py` 会在某份文档只存在于一种语言时让 CI 变红，因此两边都不会悄悄腐烂。
+中文是撰写源，英文与之镜像。`tooling/checks/check_docs.py` 会在其中某份只存在于一种语言、或两种语言结构漂移时让 CI 变红。
+
+**其余文档一律单语**（`docs/`、`templates/`、`specs/`、`tooling/`）。把每份工作模板都翻译一遍，只会让维护成本翻倍、并把日常改文档卡住，而并没有人在读它。不想要这道门禁的项目，跑 `init_project.py --no-doc-gate` 即可摘掉。
 
 ---
 

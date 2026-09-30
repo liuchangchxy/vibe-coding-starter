@@ -118,7 +118,8 @@ These activate only when the project's shape matches the stated boundary. **Unma
   - **Zero hardcoded natural language**: display copy goes through a language dictionary; never scatter raw strings through business logic;
   - **Backend purity**: interface errors return structured codes; never concatenate natural-language sentences;
   - **Key parity**: the main and target language dictionaries must be 100% mirrored; a missing translation is a hard failure;
-  - **Static scan guard**: write a source-scanning test per §1.6 to catch newly written raw copy (per-stack tooling in [LOCALIZATION.md](LOCALIZATION.md) part 3).
+  - **Static scan guard**: write a source-scanning test per §1.6 to catch newly written raw copy;
+  - **Close all five rework sources**: the closed-type recipe, the gate set, and the pseudo-locale/outlet-inventory recipe are in [LOCALIZATION.md](LOCALIZATION.md) part 2. A gate with no type layer is discipline; a type layer with no smoke layer leaks through notifications and widgets.
 
 ### 2. Theme and constrained-viewport gate (projects with a graphical interface)
 * **Boundary**: active only when the project has a graphical view (Web/desktop/mobile). Pure CLI or backend is exempt.

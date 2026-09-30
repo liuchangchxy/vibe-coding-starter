@@ -6,6 +6,7 @@ init_project.py - 新开源项目标准化脚手架初始化器
 1. 自动部署根目录 SPONSOR.md (赞助渠道与鸣谢墙)
 2. 自动部署根目录 FAQ.md (常见排查与故障处理指南)
 3. 自动安装防测试篡改与硬编码路径扫描的 Pre-Commit 本地门禁
+   （加 --no-doc-gate 可移除文档双语镜像门禁，适合不打算维护双语文档的项目）
 4. 自动初始化多语言字典骨架 (locales/zh-CN.json, locales/en-US.json)
 """
 
@@ -59,6 +60,16 @@ def init_project(project_name: str = "MyOpenSourceApp"):
         if not en_json.exists():
             en_json.write_text('{\n  "app": {\n    "name": "' + project_name + '",\n    "welcome": "Welcome"\n  }\n}\n', encoding="utf-8")
         print("✅ [全双语基准] 已创建初始多语言字典骨架 (locales/zh-CN.json, locales/en-US.json)")
+
+    # 3.5 可选：关掉文档镜像门禁
+    if "--no-doc-gate" in sys.argv:
+        doc_gate = root / "tooling" / "checks" / "check_docs.py"
+        if doc_gate.exists():
+            doc_gate.unlink()
+            print("✅ [可选] 已移除 check_docs.py：本项目不强制文档双语镜像")
+            print("   （pre-commit 钩子按文件存在与否决定是否运行该门禁，移除即失效）")
+        else:
+            print("ℹ️ [可选] check_docs.py 不存在，跳过。")
 
     # 4. 执行 setup-hooks.py 激活门禁
     setup_hooks_script = root / "tooling" / "checks" / "setup-hooks.py"

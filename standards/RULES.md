@@ -2,6 +2,8 @@
 
 > **What this is**: one row per rule, one stable ID per rule, and **exactly one home file** where that rule is defined. Everything else that needs the rule links to it — nothing restates it.
 >
+> **How to read it**: this is a **lookup table** — for navigation, review, and reorganization. It is *not* required reading at the start of a session. `AGENTS.md` and `SPEC.md` are what a session reads first.
+>
 > **Why it exists**: a rule written in three places drifts into three different rules. This index is the anti-drift contract, and it is the safety net for any reorganization: `tooling/checks/check_docs.py` fails CI when a rule's declared home no longer contains it. **You cannot lose a rule without the build going red.**
 
 <p align="center"><a href="RULES.md">English</a> · <a href="RULES.zh-CN.md">简体中文</a></p>

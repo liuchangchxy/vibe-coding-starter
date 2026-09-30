@@ -28,6 +28,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent.parent
 MID = ".zh-CN.md"
 
+# Documents that MUST be mirrored. This is the deliberate scope of bilingual
+# documentation: the front door (README), the constitution (AGENTS), the product
+# contract (SPEC), and the standards. Everything else is a working document for
+# whoever is building the project and stays single-language - translating every
+# template doubled the maintenance and blocked ordinary edits for no reader.
+MIRRORED = {
+    "README.md",
+    "AGENTS.md",
+    "SPEC.md",
+    "standards/TESTING.md",
+    "standards/REVIEWING.md",
+    "standards/EXECUTION.md",
+    "standards/ARCHITECTURE.md",
+    "standards/LOCALIZATION.md",
+    "standards/RULES.md",
+}
+
 # Files that intentionally have no mirror. Each entry states WHY.
 # Matched by path suffix (a content signature), never by line number.
 NO_MIRROR: dict[str, str] = {
@@ -67,7 +84,8 @@ def heading_skeleton(path: Path) -> list[str]:
     return skeleton
 
 
-def check_bilingual(files: list[Path]) -> list[str]:
+def check_bilingual(files: list[Path], mirrored: set[str] | None = None) -> list[str]:
+    mirrored = MIRRORED if mirrored is None else mirrored
     problems = []
     for f in files:
         try:
@@ -80,11 +98,16 @@ def check_bilingual(files: list[Path]) -> list[str]:
             base = f.with_name(f.name[: -len(MID)] + ".md")
             if not base.exists():
                 problems.append(f"{rel}: Chinese mirror has no English original ({base.name} missing)")
-            continue
-        # The rule index and the visual-smoke README are ordinary documents too.
+                continue
+            if rel[: -len(MID)] + ".md" not in mirrored:
+                continue          # a voluntary extra mirror; base existence is enough
         mirror = f.with_name(f.name[:-3] + MID)
         if not mirror.exists():
-            problems.append(f"{rel}: no Chinese mirror ({mirror.name} missing)")
+            if rel in mirrored:
+                problems.append(
+                    f"{rel}: this document is in the mandatory mirror set but has no "
+                    f"Chinese mirror ({mirror.name} missing)"
+                )
             continue
         en, zh = heading_skeleton(f), heading_skeleton(mirror)
         if len(en) != len(zh):
@@ -138,32 +161,36 @@ def _selftest() -> int:
     failures = []
     with tempfile.TemporaryDirectory() as tmp:
         d = Path(tmp)
-        # VIOLATING: an English doc with no Chinese mirror -> must be flagged.
-        (d / "lonely.md").write_text("# Title\n\n## A\n", encoding="utf-8")
-        got = check_bilingual([d / "lonely.md"])
-        if not got:
-            failures.append("failed to flag a document with no mirror")
 
-        # VIOLATING: mirrors whose heading skeletons differ -> must be flagged.
+        # VIOLATING: a document in the mandatory set with no mirror.
+        (d / "lonely.md").write_text("# Title\n\n## A\n", encoding="utf-8")
+        if not check_bilingual([d / "lonely.md"], mirrored={"lonely.md"}):
+            failures.append("failed to flag a mandatory document with no mirror")
+
+        # COMPLIANT: the same file when it is NOT in the mandatory set.
+        if check_bilingual([d / "lonely.md"], mirrored=set()):
+            failures.append("false positive on a non-mandatory document without a mirror")
+
+        # VIOLATING: mirrors whose heading skeletons differ.
         (d / "drift.md").write_text("# T\n\n## A\n\n## B\n", encoding="utf-8")
         (d / "drift.zh-CN.md").write_text("# T\n\n## A\n", encoding="utf-8")
-        got = check_bilingual([d / "drift.md"])
+        got = check_bilingual([d / "drift.md"], mirrored={"drift.md"})
         if not any("heading count differs" in p for p in got):
             failures.append("failed to flag a heading-count mismatch between mirrors")
 
         # COMPLIANT: a '#' inside a fenced block is a shell comment, not a heading.
         (d / "fence.md").write_text("# T\n\n```bash\n# a comment\n```\n\n## A\n", encoding="utf-8")
         (d / "fence.zh-CN.md").write_text("# T\n\n```bash\n# 注释\n```\n\n## A\n", encoding="utf-8")
-        if check_bilingual([d / "fence.md"]):
+        if check_bilingual([d / "fence.md"], mirrored={"fence.md"}):
             failures.append("false positive on a shell comment inside a fenced block")
 
-        # COMPLIANT: matching pair -> must stay silent.
+        # COMPLIANT: a matching pair.
         (d / "ok.md").write_text("# T\n\n## A\n", encoding="utf-8")
         (d / "ok.zh-CN.md").write_text("# T\n\n## A\n", encoding="utf-8")
-        if check_bilingual([d / "ok.md"]):
+        if check_bilingual([d / "ok.md"], mirrored={"ok.md"}):
             failures.append("false positive on a matching pair")
 
-        # COMPLIANT: allowlisted path -> must stay silent.
+        # COMPLIANT: allowlisted path.
         if check_bilingual([ROOT / ".agents" / "skills" / "sdd-implementation" / "SKILL.md"]):
             failures.append("false positive on an allowlisted file")
 

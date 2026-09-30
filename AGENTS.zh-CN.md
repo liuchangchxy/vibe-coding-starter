@@ -79,15 +79,15 @@
 
 1. **单一真理源**：任何业务改动的最终标准以 [SPEC.md](SPEC.zh-CN.md) 为准，代码只是 Spec 的具象化体现。
 2. **非破坏性操作**：严禁未经用户明确许可物理删除已有数据或覆盖受保护的系统配置。
-3. **防测试篡改铁律 (Anti-Test Tampering)**：严禁在测试红灯时通过放宽断言预期（assert/expect）、删除旧用例、注释断言或标注跳过（skip）来伪造全绿！业务实现必须适配测试，绝不允许削弱测试迁就坏代码。物理检测工具见 `tooling/checks/guard_test_tampering.py`。
-4. **禁止硬编码绝对路径 (No Hardcoded Absolute Paths)**：全仓严禁在源码中写入开发机或特定系统的绝对路径（如 `C:\Users\...`, `/home/...`）。所有文件读写与资源定位必须基于基准路径动态推导（如 `Path(__file__).resolve().parent` / `import.meta.url`）或环境变量注入。检测工具见 `tooling/checks/scan_hardcoded_paths.py`。
+3. **防测试篡改铁律**：严禁伪造全绿；业务实现适配测试，绝不削弱测试迁就坏代码。完整门禁见 `standards/TESTING.md` §一.2。
+4. **禁止硬编码绝对路径**：一律基于当前文件位置动态推导或环境变量注入。完整门禁见 `standards/TESTING.md` §一.3。
 5. **人机交互本地化与视觉规范 (Universal Localization & Visual Theming)**：
    - **交互本地化（适用一切含用户交互/输出的项目）**：零硬编码自然语言文案；服务端/后端严禁拼接面向人类的自然语言句子，一律返回结构化代码（如 `{"error_code": "CODE", "params": {...}}`）；字典必须保证键集双向 100% 镜像对齐（Key Parity）；纯底层无交互库自动豁免。
    - **视觉主题（仅适用于包含 GUI/Web/移动端界面的项目，纯 CLI/后端自动豁免）**：必须使用语义化 Design Tokens，严禁组件模板裸写固定色值；入口配置防闪烁 (Zero FOUC) 脚本。详见 [standards/LOCALIZATION.md](standards/LOCALIZATION.zh-CN.md)。
 6. **开源标配组件规范 (Standard Open-Source Deliverables)**：
    - 开源项目必须标配 **[赞助说明 (templates/SPONSOR.md)](templates/SPONSOR.zh-CN.md)** 与 **[常见问题排查 (templates/FAQ.md)](templates/FAQ.zh-CN.md)**，作为项目对外部开发者友好的基础设施。
 7. **交付必须全绿**：改动业务代码后必须主动在后台运行测试，严禁带病提交。
-8. **强制端到端验证 (Mandatory E2E Testing)**：严禁仅依赖 Mock 单元测试！涉及全流程、持久化或关键数据流的改动，必须显式运行端到端物理测试验证全链路真实落盘与流转。严禁将 `skipped` 误报为通过！
+8. **强制端到端验证**：Mock 测试单独不能证明任何用户链路。完整门禁见 `standards/TESTING.md` §一.10。
 
 ## 复杂度开关与证据入口 (Complexity Switch & Evidence)
 

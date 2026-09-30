@@ -1,14 +1,31 @@
-# Full-Lifecycle Localization & Visual Theming Architecture (LOCALIZATION.md)
+# Full-Lifecycle Localization & Theming (LOCALIZATION.md)
 
 > 💡 **Core philosophy**: localization (i18n) and theming are not "patches applied at render time" — they are **first-class dimensions** running through human interaction, the data flow, service contracts, and CI gates.
-> Any localization scheme that relies on developers or AI "remembering to comply" will rot. It must be held up by **physical interception and type constraints in the toolchain**.
 > This document defines a **universal cross-stack core model** plus opt-in adapters for Web / mobile / CLI / backend. Pure algorithm libraries and non-interactive components are exempt.
 
 <p align="center"><a href="LOCALIZATION.md">English</a> · <a href="LOCALIZATION.zh-CN.md">简体中文</a></p>
 
 ---
 
-## 🌐 Part 1 — The universal five-layer localization model
+## 0. Why retrofit is the default outcome
+
+Every i18n system fails the same way: **the default path produces single-language code, and translation is a second step.** A process that depends on the second step happening is a process that fails.
+
+So the goal is never "remember to localize". The goal is: **a single-language state cannot be expressed, cannot build, and cannot ship.**
+
+That yields five concrete rework sources. Close all five and there is no later rework — not when adding a feature, not when changing one.
+
+| # | Rework source | Why it guarantees rework | What closes it |
+|---|---|---|---|
+| 1 | A literal string in code | It ships first; the dictionary is an afterthought | **Closed type** (Part 2, layer ①) |
+| 2 | A key added to one language only | The gap is invisible until runtime | **Exhaustive type / parity gate** (layers ① and ②) |
+| 3 | **Outlets outside the dictionary** — notifications, desktop widgets, server errors, AI output | They bypass UI components, so no UI check can see them | **Pseudo-locale smoke + outlet inventory** (layer ③) |
+| 4 | A language baked into persisted data | Switching language splits historical data; **irreversible** | **Codes-only rule** (Part 3) |
+| 5 | Layout pinned to one language's length | Text grows 30–50% and the layout bursts | **Pseudo-locale inflation** (layer ③) |
+
+---
+
+## 🌐 Part 1 — The five-layer model
 
 Whatever language or stack a project uses, anything with user-facing output obeys these five layers:
 
@@ -20,27 +37,20 @@ flowchart TD
     D --> E["⑤ Physical gates (100% key parity + static dead-copy scan)"]
 ```
 
-### 1. Universal core rules (100% cross-language, cross-stack)
-
-1. **Zero hardcoded natural language** — never scatter human-readable strings through core business logic; every prompt and UI string goes through a modular dictionary or language pack (per-stack formats in Part 3).
-2. **Servers must never concatenate human sentences** — interface errors return a structured code plus parameters: `{"error_code": "RESOURCE_NOT_FOUND", "params": {"id": 123}}`, translated by the presentation layer. This eliminates the front-end/back-end language split.
-3. **Key parity gate** — the main language and every target language must have identical key sets. Any new or missing key is intercepted by an automated test.
-4. **Bare data only** — time is always returned as ISO-8601 UTC; numbers and money as bare values. The presentation layer renders them with the environment's standard localization formatter (JavaScript `Intl`, Python `babel`, Dart `intl`, Rust `fluent`).
-
-### 2. Layer-by-layer rules
+### Layer rules
 
 #### ① State — the language state is a single source of truth
 - Global language state (e.g. `zh-CN`, `en-US`) must be held and persisted in **exactly one place**; every consumer derives from it. **No module may read the system locale on its own.**
 - A language switch must take effect **immediately and fan out** to every outlet where copy has already been baked into the system (scheduled notifications, an already-rendered desktop widget, cached pages) — not on the next rebuild.
-- **Layout elasticity budget**: Latin-script text typically occupies **30%–50%** more horizontal width than Chinese. Never hardcode pixel widths for buttons, inputs, or table headers; provide fluid elasticity and wrapping/ellipsis tolerance.
+- **Layout elasticity budget**: Latin-script text typically occupies **30%–50%** more horizontal width than Chinese. Never hardcode pixel widths for buttons, inputs, or table headers.
 
 #### ② Presentation — zero raw text
 - Every display string is extracted through a translation function or dictionary lookup. Never leave a natural-language literal in business logic.
 - Dictionaries are sharded by module; the **main language dictionary is the source of truth** (new keys land there first) and the target languages mirror it.
-- **Missing-key degradation**: when a key is absent at runtime, fall back to displaying the key itself (never crash or render blank) and warn in the development environment — so a missing translation surfaces during development rather than after release.
+- **Missing-key degradation**: when a key is absent at runtime, fall back to displaying the key itself (never crash or render blank) and warn in the development environment.
 
 #### ③ Communication/service — language and data are separated
-1. **Uniform header** — the client's global HTTP client must send a language header on every request (example format; `q` is the weight):
+1. **Uniform header** — the client's global HTTP client sends a language header on every request (example format; `q` is the weight):
    ```http
    Accept-Language: zh-CN,en-US;q=0.9
    ```
@@ -50,39 +60,101 @@ flowchart TD
      ```json
      { "error_code": "AUTH_INVALID_CREDENTIALS", "params": { "field": "username" } }
      ```
-   - This is what prevents the disaster of "the UI switched to English and the error dialog is still Chinese".
 3. **Dates, times, and money as bare data** — the backend returns ISO-8601 UTC strings or bare values; the presentation layer renders them with the language's standard formatter.
 
 #### ④ Domain data — data carries no language
-1. **Persisted enums must be codes** — statuses and types stored in a database must be stable neutral codes (`in_progress`, `approved`, `single_choice`). **Never write a language's copy into a persisted field**; the presentation layer translates at display time. Otherwise a language switch or a cross-device sync produces a language-split history.
-2. **Content fallback chain** — user-generated or editorially configured multilingual content degrades along `target_locale → default_locale → raw`, so a missing ring still yields a value instead of a blank.
-3. **AI prompt passthrough** — every prompt that asks a model to generate text **must pass the user's current `locale`** and force the constraint "Respond strictly in {target_language}" in the system prompt. Otherwise you get "the UI is English but the AI still answers in Chinese".
+1. **Persisted enums must be codes** — statuses and types stored in a database must be stable neutral codes (`in_progress`, `approved`, `single_choice`). **Never write a language's copy into a persisted field.** Otherwise a language switch or a cross-device sync produces a language-split history that cannot be repaired.
+2. **Content fallback chain** — user-generated or editorially configured multilingual content degrades along `target_locale → default_locale → raw`.
+3. **AI prompt passthrough** — every prompt that asks a model to generate text **must pass the user's current `locale`** and force the constraint "Respond strictly in {target_language}" in the system prompt.
 
 #### ⑤ Gates — physical interception, not discipline
-- **Key parity gate** — CI diffs the key sets in both directions; anything missing on one side, or any stale key left behind, goes red. The assertion logic is stack-independent:
-  ```python
-  def test_locale_keys_parity():
-      base = extract_all_keys(BASE_LOCALE)          # parse the main dictionary file by file
-      for lang in OTHER_LOCALES:
-          other = extract_all_keys(lang)
-          assert not (base - other), f"{lang} missing keys: {base - other}"
-          assert not (other - base), f"{lang} stale keys: {other - base}"
-  ```
-- **Static dead-copy scan** — write a source-scanning guard that catches newly written raw copy (see `standards/TESTING.md` §1.6, the style-as-test triad). A project whose main language is Chinese can scan for a CJK regex; a main-language-English project should scan for "string literals not wrapped in the lookup function". **Whatever you scan, the guard must first prove it can go red and green.**
+- **Key parity gate** — CI diffs the key sets in both directions; anything missing on one side, or any stale key left behind, goes red (implementation in layer ② below).
+- **Static dead-copy scan** — a source-scanning guard that catches newly written raw copy (see `TESTING.md` §1.6, the style-as-test triad).
 
 ---
 
-## 🌓 Part 2 — Visual theming (GUI / Web / mobile only)
+## 🛠️ Part 2 — The three enforcement layers
+
+Layers ① and ② are what make this a mechanism rather than an instruction. **Only gates, with no type layer, is discipline. Only a type layer, with no smoke layer, leaks through notifications and widgets forever.**
+
+### Layer ① — Expression: make "untranslated" unrepresentable
+
+**The type of a user-visible string is not `String`.** It is a closed set. UI components accept only that type, so a bare literal cannot be passed in. Adding a string means adding a member, and the compiler then demands a branch for it.
+
+**Dart / Flutter**
+```dart
+enum AppStr { settingsTitle, todoCountLabel, syncFailed }
+
+extension AppStrL10n on AppStr {
+  String tr(AppLocalizations l) => switch (this) {
+        AppStr.settingsTitle => l.settings,
+        AppStr.todoCountLabel => l.todoCountLabel,
+        AppStr.syncFailed => l.syncFailed,
+      };
+}
+```
+Adding a member to `AppStr` makes the `switch` non-exhaustive → **compile error** until every string is routed through the dictionary.
+
+> ⚠️ **What this does and does not guarantee.** It guarantees every string goes *through* the dictionary. It does **not** guarantee every language defines it: Flutter's `gen-l10n` silently falls back to the template for a missing translation. So per-language completeness needs layer ② — unless you use a generator that fails instead of falling back.
+
+**TypeScript**
+```ts
+const en = { settingsTitle: 'Settings', syncFailed: 'Sync failed' } as const;
+export type MsgKey = keyof typeof en;
+// Missing or extra keys here are a COMPILE error - parity is enforced by the type.
+const zh: Record<MsgKey, string> = { settingsTitle: '设置', syncFailed: '同步失败' };
+```
+
+**Python**
+```python
+class Msg(Enum):
+    SETTINGS_TITLE = auto()
+    SYNC_FAILED = auto()
+
+CATALOG: dict[str, dict[Msg, str]] = {...}
+
+# Import-time: a missing translation refuses to start rather than degrading silently.
+for _locale, _table in CATALOG.items():
+    _missing = set(Msg) - set(_table)
+    if _missing:
+        raise RuntimeError(f"{_locale} is missing: {sorted(m.name for m in _missing)}")
+```
+
+### Layer ② — Build: gates that catch what the type layer cannot
+
+1. **Key parity, both directions** — missing keys *and* stale keys left behind after a call site is deleted.
+2. **Raw-literal scan** — a source-scanning guard per `TESTING.md` §1.6 (`--selftest`, allowlist with WHY, matched by content signature).
+3. **Untranslated report must be empty.** Where the generator reports untranslated messages to a file (Flutter's `untranslated-messages-file`), CI asserts that file is empty. **This is the piece that turns "silent fallback" into a red build.**
+
+### Layer ③ — Delivery: pseudo-locale smoke and the outlet inventory
+
+This is the only layer that sees outlet class 3 (notifications, widgets, server errors, AI output), and the only one that sees layout bursting.
+
+**Pseudo-locale recipe**
+1. Add a pseudo locale whose every value is the real value **wrapped in markers** and **inflated ~40%**:
+   `"Settings"` → `"⟦Şéţţíñĝš················⟧"`.
+2. Switch the app to it and walk every screen, triggering native outlets (fire a test notification, refresh the desktop widget).
+3. **Any visible text without markers is a string that never went through the dictionary.** Any layout that bursts is source 5.
+4. Screenshot the run; the shots are the evidence, and a machine can grep them for markerless text.
+
+**Outlet inventory**
+Keep an explicit list of every place user-visible text appears: in-app UI, notifications, desktop/widget, share/export text, server errors surfaced to the user, AI-generated text, CLI output, store listing, permission prompts.
+
+**Rule**: a new outlet must be added to the list *and* covered by the pseudo-locale run. **An outlet that is not on the list is not shippable.**
+
+---
+
+## 🌓 Part 3 — Visual theming (GUI / Web / mobile only)
 
 > 💡 *CLI tools, pure backend microservices, and offline compute jobs are exempt from this part.*
 
 1. **Single source of truth** — manage `light` | `dark` | `system` at the top level, persist it, and dispatch it to the root render container. Every component derives from it; no local overrides.
 2. **Semantic design tokens; no raw color values** — never write `#ffffff` or `#000000` in a component. Backgrounds, text, and borders all come from semantic variables (e.g. `surface-primary`, `text-main`) that respond to light/dark automatically. New components adapt by default.
-3. **Zero FOUC** — any project with a Web/DOM rendering environment must read the preference and lock the root class before the first paint, so nothing flickers while styles load (executable implementation in Part 3, Web adapter).
+3. **Zero FOUC** — any project with a Web/DOM rendering environment must read the preference and lock the root class before the first paint, so nothing flickers while styles load (executable implementation in Part 4, Web adapter).
 
 ---
 
-## 🛠️ Part 3 — Per-stack adapters (opt-in)
+## 🔌 Part 4 — Per-stack adapters (opt-in)
 
 ### 1. Web frontend (Vue / React / Svelte / plain DOM)
 - **Extraction**: `t('module.key')`;
