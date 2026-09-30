@@ -58,11 +58,13 @@ class TestSmoke(unittest.TestCase):
         self.assertTrue(arch_file.exists(), "templates/I18N_AND_THEME_ARCHITECTURE.md must exist.")
 
     def test_guard_scripts_exist(self):
-        """Verify anti-tampering and path scan guard scripts exist."""
+        """Verify anti-tampering, path scan, and init project scripts exist."""
         tamper_script = self.root / "scripts" / "guard_test_tampering.py"
         path_script = self.root / "scripts" / "scan_hardcoded_paths.py"
+        init_script = self.root / "scripts" / "init_project.py"
         self.assertTrue(tamper_script.exists(), "scripts/guard_test_tampering.py must exist.")
         self.assertTrue(path_script.exists(), "scripts/scan_hardcoded_paths.py must exist.")
+        self.assertTrue(init_script.exists(), "scripts/init_project.py must exist.")
 
     def test_no_hardcoded_paths_in_starter(self):
         """Verify the starter repository itself has zero hardcoded absolute paths."""
@@ -79,4 +81,5 @@ class TestSmoke(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
 
