@@ -1,23 +1,21 @@
-# 向导式与多步流转通用规范
+# Wizard and Multi-Step Flow Extension
 
-仅在向导 (Wizard)、分步表单、逐步排查、问卷调研、流程推进等多步流转交互中启用。
+Enable only for wizards, multi-step forms, guided troubleshooting, surveys, or other step-wise flows.
 
-## 1. 推进导航非阻塞
+<p align="center"><a href="STEPPER_WORKFLOWS.md">English</a> · <a href="STEPPER_WORKFLOWS.zh-CN.md">简体中文</a></p>
 
-- 除严格数据前置依赖（如前序步骤生成的 ID 为后续唯一下游入参）外，多步流程中“跳过/下一步/步骤条直达”严禁被单步未完成状态死锁。
-- 单步未填或校验不通过仅作为状态标记（如警告色、未填徽章），必须保证用户自由浏览、跳题与回头后补的探索自由。
+## 1. Forward navigation must not block
+- Except for a hard data prerequisite (the previous step generates the only valid input for the next), "skip / next / jump via the stepper" must never deadlock on an incomplete step.
+- An unfilled or failing step is only a **status marker** (warning color, incomplete badge). The user keeps the freedom to browse, skip, and come back.
 
-## 2. 状态双轨制（Draft vs. Commit）
+## 2. Two-track state (draft vs. commit)
+- **Transient edit view**: for the current step's interaction only; never the sole source of truth.
+- **Session snapshot bus**: keep a map keyed by step/node ID in session memory (e.g. `sessionDrafts[stepId]`).
+- **Decouple switching from resetting**:
+  - Before leaving a node, atomically stash the current step's transient state (checks, text, expansion, verdicts);
+  - On entering a target node, idempotently rehydrate that node's prior answers and verdicts;
+  - Never perform a global data wipe inside a step-change listener (e.g. `watch(currentStep)`).
 
-- **瞬态编辑视图**：仅用于当前步骤的操作与交互，严禁作为唯一的真理源。
-- **会话快照总线**：在会话内存中维护以步骤/节点 ID 为键的映射表（如 `sessionDrafts[stepId]`）。
-- **切换与重置解耦**：
-  - 离开当前节点前，必须自动原子暂存当前步骤的瞬态状态（勾选、文本输入、展开状态、判定结果）；
-  - 进入目标节点时，必须按节点 ID 幂等还原（Rehydrate）历史作答与判定；
-  - 严禁在步骤切换监听（如 `watch(currentStep)`）中执行全局数据清空。
-
-## 3. 校验防呆收敛于终局交割
-
-- 过程态允许不完整、允许中途退出并保留草稿。
-- 完整性强校验与防呆拦截，必须集中于终局动作（如“提交”、“交卷”、“结算”、“确认生效”）。
-- 终局触发时统一汇总未完成项数量，由防呆对话框明确告知并请求用户二次确认，禁止在单步流转中逐点阻断。
+## 3. Validation converges on the final action
+- Intermediate states may be incomplete; the user may leave mid-way with the draft preserved.
+- Strong completeness validation and guard rails concentrate at the terminal action ("submit", "hand in", "settle", "confirm"). On trigger, aggregate the outstanding items, tell the user, and ask for one explicit confirmation — never block point by point during the flow.

@@ -1,29 +1,27 @@
-# 测试证据报告
+# Test Evidence Report
 
-## 范围
+<p align="center"><a href="TEST_EVIDENCE_TEMPLATE.md">English</a> · <a href="TEST_EVIDENCE_TEMPLATE.zh-CN.md">简体中文</a></p>
 
-- 变更/需求：
-- 代码版本：
-- 环境：
+## Scope
+- Change / requirement:
+- Code revision:
+- Environment:
 
-## 分层结果
-
-| 层级 | 命令 | pass | fail | skipped | 未运行原因 |
+## Results by layer
+| Layer | Command | pass | fail | skipped | Reason if not run |
 |---|---|---:|---:|---:|---|
-| 单元/领域 | | | | | |
-| API/集成 | | | | | |
-| 数据库/文件物理链路 | | | | | |
-| 浏览器/真实客户端 E2E（如适用） | | | | | |
-| 构建/部署冒烟（如适用） | | | | | |
+| Unit / domain | | | | | |
+| API / integration | | | | | |
+| Database / file physical link | | | | | |
+| Browser / real-client E2E (if applicable) | | | | | |
+| Build / deploy smoke (if applicable) | | | | | |
 
-## 结论
+## Conclusion
+- Highest layer actually verified:
+- Any undisclosed failure or skip:
+- What may be claimed:
+- What may not be claimed:
 
-- 最高实际验证层级：
-- 是否存在未披露的失败或跳过：
-- 可声明的范围：
-- 不能声明的范围：
-
-## 计数口径与重复采样（按需填写）
-
-- 测试运行器汇总与实际业务场景/子测试数不一致时，说明两种计数及其关系：
-- 对已确认的偶发问题进行重复采样时，记录固定条件、总运行次数、通过数和失败数；不适用时留空：
+## Counting and repetition (fill in as applicable)
+- When the runner's total disagrees with the real scenario/subtest count, state both and their relationship:
+- For a confirmed flaky issue under repeat sampling, record the fixed conditions, total runs, passes, and failures. Leave blank when not applicable.

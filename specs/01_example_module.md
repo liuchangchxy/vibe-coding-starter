@@ -1,18 +1,20 @@
-# [子模块名称] 规范定义 (specs/xx_module.md)
+# [Sub-module name] Specification (specs/xx_module.md)
 
-> 当项目规模扩展、单体 SPEC.md 超过 500 行时启用分片。
-> 本模块规范由根目录 [SPEC.md](../SPEC.md) 作为主索引索引。
+> Shard only once the monolith grows: when the root `SPEC.md` exceeds 500 lines, move independent sub-domains here.
+> This module is indexed by the root [SPEC.md](../SPEC.md).
+
+<p align="center"><a href="01_example_module.md">English</a> · <a href="01_example_module.zh-CN.md">简体中文</a></p>
 
 ---
 
-## 1. 模块边界与职责
-- **核心定位**：[该模块负责什么]
-- **对外依赖**：[依赖哪些其他模块]
-- **暴露接口 / 契约**：[对外提供的能力]
+## 1. Module boundary and responsibility
+- **Positioning**: [what this module owns]
+- **External dependencies**: [which other modules it depends on]
+- **Exposed interface / contract**: [what it offers outward]
 
-## 2. 详细业务规则
-- **规则 1**：[具体规则]
-- **规则 2**：[具体规则]
+## 2. Detailed business rules
+- **Rule 1**: [concrete rule]
+- **Rule 2**: [concrete rule]
 
-## 3. 专属异常与边界测试用例
-- [列出该模块的边界条件与预期行为]
+## 3. Module-specific exceptions and boundary tests
+- [boundary conditions and their expected behavior]

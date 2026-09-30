@@ -9,7 +9,7 @@ Use this skill only after the user has confirmed the scope or named an existing 
 
 ## Standard cadence
 
-1. Read `AGENTS.md`, `SPEC.md`, `TESTING.md`, the traceability matrix, and the named plan.
+1. Read `AGENTS.md`, `SPEC.md`, `standards/TESTING.md`, `docs/REQUIREMENTS_TRACEABILITY.md`, and the named plan.
 2. Inspect `git status` and the current diff. Preserve unrelated work.
 3. Verify the plan's paths, symbols, interfaces, and test commands still exist.
 4. For a behavior change, add a focused regression test and run it RED before implementation.
@@ -20,7 +20,7 @@ Use this skill only after the user has confirmed the scope or named an existing 
 
 ## Complexity switch
 
-Do not create a Master Plan, dispatch Agents, run browser E2E, or perform OSS/data-safety audits unless the task actually triggers those concerns. For high-risk or cross-module changes, use `EXECUTION.md` and the applicable `docs/optional/` extension.
+Do not create a Master Plan, dispatch Agents, run browser E2E, or perform OSS/data-safety audits unless the task actually triggers those concerns. For high-risk or cross-module changes, use `standards/EXECUTION.md` and the applicable `docs/optional/` extension.
 
 ## Stop condition
 

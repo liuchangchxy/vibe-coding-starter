@@ -1,38 +1,35 @@
-# [计划名称]
+# [Plan name]
 
-> 本模板用于跨文件、跨模块或高风险任务。单文件小改动不必创建 Master Plan。
+> Use this for cross-file, cross-module, or high-risk work. A single-file tweak does not need a Master Plan.
 
-## 1. 范围
+<p align="center"><a href="PLAN_TEMPLATE.md">English</a> · <a href="PLAN_TEMPLATE.zh-CN.md">简体中文</a></p>
 
-- 目标：
-- 对应 SPEC 条目：
-- 本计划明确不做：
-- 完成定义：
+## 1. Scope
+- Goal:
+- Corresponding SPEC item:
+- Explicitly out of scope:
+- Definition of done:
 
-## 2. 当前证据
+## 2. Current evidence
+- Relevant source:
+- Relevant tests:
+- Current failure / gap:
+- Existing working-tree changes:
 
-- 相关源码：
-- 相关测试：
-- 当前失败/缺口：
-- 既有工作树变更：
-
-## 3. 任务分解
-
-| 任务 | 输入/输出边界 | 依赖 | 验收测试 | 状态 |
+## 3. Task breakdown
+| Task | Input/output boundary | Depends on | Acceptance test | Status |
 |---|---|---|---|---|
-| T1 | | | | 待开始 |
+| T1 | | | | not started |
 
-## 4. 执行纪律
+## 4. Execution discipline
+1. Verify the paths, interfaces, and plan are still valid before starting.
+2. For a behavior change, write the regression test first and confirm it is RED before implementing GREEN.
+3. Never delete or weaken an existing test, and never edit an expected value to accommodate the implementation.
+4. Take a checkpoint per `AGENTS.md` before cross-module or high-risk changes.
+5. Every stage report states the real test results and the items not run. Never pass off a plan threshold as completion evidence.
 
-1. 先核对当前路径、接口和计划是否仍有效。
-2. 业务变更先写回归测试，并确认 RED，再实现 GREEN。
-3. 不删除或放宽既有测试，不修改预期值来迁就实现。
-4. 跨模块或高风险改动前按 `AGENTS.md` 创建 checkpoint。
-5. 每阶段报告实际测试结果和未运行项，不把计划门槛冒充完成证据。
-
-## 5. 收尾
-
-- [ ] 需求追踪矩阵已更新
-- [ ] 测试证据已记录
-- [ ] 未完成项和裁定已记录
-- [ ] 本计划没有扩大为未确认的新需求
+## 5. Close-out
+- [ ] Traceability matrix updated
+- [ ] Test evidence recorded
+- [ ] Unfinished items and rulings recorded
+- [ ] This plan did not expand into unconfirmed new requirements

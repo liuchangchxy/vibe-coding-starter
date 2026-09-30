@@ -4,6 +4,7 @@
 Ensures the testing harness is fully operational right after cloning.
 """
 import json
+import sys
 import unittest
 from pathlib import Path
 
@@ -12,7 +13,7 @@ class TestSmoke(unittest.TestCase):
     """Smoke test to verify test harness and environment health."""
 
     def setUp(self):
-        self.root = Path(__file__).resolve().parent.parent
+        self.root = Path(__file__).resolve().parent.parent.parent
 
     def test_environment_healthy(self):
         """Verify baseline test environment passes."""
@@ -30,8 +31,8 @@ class TestSmoke(unittest.TestCase):
 
     def test_checkpoint_script_exists(self):
         """Verify checkpoint manager script exists."""
-        cp_file = self.root / "scripts" / "checkpoint.py"
-        self.assertTrue(cp_file.exists(), "scripts/checkpoint.py must exist.")
+        cp_file = self.root / "tooling" / "checks" / "checkpoint.py"
+        self.assertTrue(cp_file.exists(), "tooling/checks/checkpoint.py must exist.")
 
     def test_devcontainer_valid(self):
         """Verify .devcontainer/devcontainer.json exists and is valid JSON."""
@@ -53,24 +54,24 @@ class TestSmoke(unittest.TestCase):
         self.assertTrue(faq_file.exists(), "templates/FAQ.md must exist.")
 
     def test_i18n_and_theme_architecture_template_exists(self):
-        """Verify I18N_AND_THEME_ARCHITECTURE.md template exists."""
-        arch_file = self.root / "templates" / "I18N_AND_THEME_ARCHITECTURE.md"
-        self.assertTrue(arch_file.exists(), "templates/I18N_AND_THEME_ARCHITECTURE.md must exist.")
+        """Verify the localization architecture standard exists."""
+        arch_file = self.root / "standards" / "LOCALIZATION.md"
+        self.assertTrue(arch_file.exists(), "standards/LOCALIZATION.md must exist.")
 
     def test_guard_scripts_exist(self):
         """Verify anti-tampering, path scan, and init project scripts exist."""
-        tamper_script = self.root / "scripts" / "guard_test_tampering.py"
-        path_script = self.root / "scripts" / "scan_hardcoded_paths.py"
-        init_script = self.root / "scripts" / "init_project.py"
-        self.assertTrue(tamper_script.exists(), "scripts/guard_test_tampering.py must exist.")
-        self.assertTrue(path_script.exists(), "scripts/scan_hardcoded_paths.py must exist.")
-        self.assertTrue(init_script.exists(), "scripts/init_project.py must exist.")
+        tamper_script = self.root / "tooling" / "checks" / "guard_test_tampering.py"
+        path_script = self.root / "tooling" / "checks" / "scan_hardcoded_paths.py"
+        init_script = self.root / "tooling" / "checks" / "init_project.py"
+        self.assertTrue(tamper_script.exists(), "tooling/checks/guard_test_tampering.py must exist.")
+        self.assertTrue(path_script.exists(), "tooling/checks/scan_hardcoded_paths.py must exist.")
+        self.assertTrue(init_script.exists(), "tooling/checks/init_project.py must exist.")
 
     def test_no_hardcoded_paths_in_starter(self):
         """Verify the starter repository itself has zero hardcoded absolute paths."""
         import subprocess
         res = subprocess.run(
-            ["python", str(self.root / "scripts" / "scan_hardcoded_paths.py")],
+            [sys.executable, str(self.root / "tooling" / "checks" / "scan_hardcoded_paths.py")],
             capture_output=True,
             text=True,
             encoding="utf-8",

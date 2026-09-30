@@ -1,23 +1,22 @@
-# 数据安全与迁移扩展规范
+# Data Safety and Migration Extension
 
-仅在数据库迁移、批量导入、文件转换、跨系统同步或其他不可逆操作中启用。本文件不是所有项目的默认门禁。
+Enable only for database migrations, bulk imports, file conversions, cross-system sync, or other irreversible operations. This is not a default gate for every project.
 
-## 操作前
+<p align="center"><a href="DATA_SAFETY.md">English</a> · <a href="DATA_SAFETY.zh-CN.md">简体中文</a></p>
 
-- 明确源数据、目标数据和恢复路径。
-- 源数据默认只读；未经明确授权不得覆盖或删除。
-- 为目标创建可验证的备份或快照。
-- 记录预期实体、数量和关键约束。
+## Before
+- Name the source, the target, and the recovery path.
+- The source is read-only by default; never overwrite or delete it without explicit authorization.
+- Create a verifiable backup or snapshot of the target.
+- Record the expected entity counts and key constraints.
 
-## 操作中
+## During
+- Bulk writes use clear transaction boundaries.
+- A mid-way failure must roll back; never leave half a batch or orphaned records.
+- Unconvertible content goes to an explicit `unconverted` / exception report.
+- Retries must not double-write or double-count.
 
-- 批量写入使用清晰的事务边界。
-- 中途失败必须能回滚，不能留下半批数据或孤儿记录。
-- 不可转换内容进入明确的 `unconverted`/异常报告。
-- 重试不能重复写入或重复计数。
-
-## 操作后
-
-- 实际核对源、目标、数量、关键关联和异常项。
-- 物理验证恢复路径，而不是只验证命令返回成功。
-- 报告成功、失败、跳过和未转换数量。
+## After
+- Physically reconcile source, target, counts, key relations, and exceptions.
+- Physically verify the recovery path, not just that a command returned success.
+- Report success, failure, skipped, and unconverted counts.

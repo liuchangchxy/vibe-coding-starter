@@ -1,127 +1,113 @@
-# AI 助手行为准则与自动化避坑引擎 (AGENTS.md)
+# AI Agent Code of Conduct & Automated Pitfall Engine (AGENTS.md)
 
-本仓库是一个基于 **规范驱动开发 (Spec-Driven Development, SDD)** 与 **零心智负担 Vibe Coding** 的通用项目脚手架。
-**【全域继承宪法】本文档为通用母规范准则，自动约束本脚手架项目自身，以及未来所有基于本脚手架克隆、派生、初始化的所有开源新项目。接入本工程或其任何衍生项目的 AI 助手（包括 Anti Gravity、Cursor、Claude Code、Windsurf、Aider、Copilot 等），必须无条件将以下准则作为最高行为法典执行，严禁将其视为仅针对单一项目的局部特例！**
+This repository is a general-purpose project scaffold built on **Spec-Driven Development (SDD)** and **zero-mental-overhead Vibe Coding**.
 
----
-
-## 核心自动化引擎 1：用户口头意图自动持久化 (Auto-Sync to Spec)
-
-当用户在对话中提到任何**功能调整、业务逻辑变更、测试异常反馈或新特性要求**时（例如：“这个不要这么算”、“界面改成两列”、“测试发现某种情况下会报错”）：
-
-1. **新建项目开源基线强制注入 (Mandatory Baseline Injection)**：
-   - 当用户基于本脚手架启动或初始化任何新项目时，AI **必须主动且默认将【全双语五层穿透架构】、【日夜模式 Design Tokens】、【SPONSOR.md 赞助体系】与【FAQ.md 排查体系】** 规划入该项目的 `SPEC.md`（见模板 §6 与 §7），作为每个开源项目的标准出厂配置，严禁当成可选插件或因用户未显式提及而私自阉割！
-2. **歧义反问拦截 (Disambiguation Gate)**：
-   - 若用户的口头诉求缺乏明确验收指标（如“把加载弄快一点”、“做个导出功能”）或存在多种互斥架构路线，**严禁直接脑补改代码**！
-   - AI 必须首先列出 2~3 个明确方案选项并简述优劣，待用户拍板后再写入 SPEC。
-3. **自动提取并持久化（禁止仅在对话框空谈或直接盲改代码）**：
-   - 必须**首先**调用文件编辑工具更新 [SPEC.md](SPEC.md)（若已启用模块分片，更新 [specs/](specs/) 目录下的对应模块规范），将用户的口头诉求转化为标准业务规则；
-   - 在回答的第一句话明确告知用户：“💡 *已自动将此需求同步记录至 SPEC.md 第 X.X 节*”。
-   - **例外识别**：若用户仅在对前序方案表达确认（如“好的”、“Proceed”、“开始执行”、“同意”），视为执行确认而非需求变更，无需重复修改 SPEC。
-4. **无损微快照保护 (Micro-Checkpoint Protocol)**：
-   - 在进行大规模代码重构、跨文件重写或高风险变动前，AI 应在后台执行 `python scripts/checkpoint.py save "<变更说明>"` 打下微快照，确保随时可通过 `python scripts/checkpoint.py restore` 毫秒级无损回滚。
-5. **轻量决策留痕**：
-   - 若涉及破坏性变更或重要架构重构，在 [DECISIONS.md](DECISIONS.md) 末尾追加一条时间戳记录（背景、决策、影响）。
-6. **测试与防倒退联动 (Defect-Driven Regression Defense)**：
-   - 遵循 [TESTING.md](TESTING.md) 守则：修改代码前或同步在测试套件中编写/更新回归测试；
-   - **防测试篡改红线**：严禁在未获用户许可时修改已有测试的断言预期或删除旧用例，不得为了让测试通过而放宽判断标准！
-   - 调整业务代码，直至全量测试 100% 全绿（含单元测试与端到端物理测试）；
-   - **严禁使用 `git commit --no-verify` 绕过本地门禁**；
-   - 严禁带着失败的测试向用户汇报完成。
+> **Universal Inheritance Constitution** — This document is the general mother standard. It automatically binds this scaffold itself *and* every open-source project cloned, derived, or initialized from it. Any AI assistant working in this repo or its derivatives (Anti Gravity, Cursor, Claude Code, Windsurf, Aider, Copilot, …) must treat the rules below as the highest code of conduct. **Never dismiss them as local special-cases of one project.**
 
 ---
 
-## 核心自动化引擎 2：1 变 4 根因发散与全局排查法则 (1-to-4 Bug Divergence Protocol)
+## Engine 1 — Auto-persist spoken intent (Auto-Sync to Spec)
 
-当用户提出**对抗性审查 (Adversarial Review)**、提出质疑或主动反馈任何系统缺陷时，AI 严禁就事论事地只改报错的孤立单行代码。
-**AI 必须以用户指出的每一个问题点为原点，结合当前产品形态，强制至少联想并地毯式排查 4 类潜在同类/共生/上下游缺陷**：
+When the user mentions **a feature change, a business rule change, a test failure, or a new requirement** ("don't compute it that way", "make the UI two columns", "the test blows up in this case"):
 
-1. **同类实现横向排查 (Lateral Pattern Scan)**：
-   - 全仓搜索同类函数调用、类似语法结构或相同 API 模式，检查是否在其他模块或组件中犯了同一错误；
-2. **逆向与边界输入排查 (Boundary & Edge Case Scan)**：
-   - 针对出错逻辑，排查其在极端输入下的鲁棒性：空值（None/null）、超长文本溢出、特殊字符、并发竞争、异步未决或网络抖动；
-3. **前后端契约与状态脱节排查 (Contract & Drift Scan)**：
-   - 排查接口请求与响应字段命名是否对齐、类型是否严格、多语言/时区是否穿透、错误码是否结构化规范；
-4. **生命周期与持久化状态排查 (Lifecycle & Persistence Scan)**：
-   - 排查缓存是否未及时失效、本地 Storage 脏数据、页面刷新后状态是否还原、跨用户或注销后是否存在状态残留。
-
-> 💡 **排查输出规范**：在修复反馈 Bug 前，AI 必须向用户列出这 4 个维度的明确推导结果与排查证据（确认安全或发现隐患并同步修复），实现“由一个线索歼灭一批潜在缺陷”。
-
-### 缺陷严重度分级治理 (P0 ~ P3 缺陷四级台阶)
-- **P0 致命级（阻塞交付）**：数据物理损坏、主流程死锁崩溃、不可逆操作 ➔ **必须彻底清零，一票否决**；
-- **P1 严重级（核心残缺）**：核心功能偏离 SPEC、乱码、关键流程失败 ➔ **必须彻底修复，测试全绿**；
-- **P2 次要级（边缘容错）**：极端网络抖动、异常文案不够友好 ➔ **记录入待办，不阻断交付**；
-- **P3 洁癖级（理论瑕疵）**：代码格式微调、极罕见极端假想场景 ➔ **严禁借此无限发散阻碍交付**。
-
-### 收敛式终局验收应答 (Definition of Done, DoD)
-当用户要求“收敛验收”、“终局审查”或确认是否可以交付时：
-- AI 严禁无休止发散脑补 P2/P3 的理论风险！
-- 判定标准：只要**所有 P0/P1 已清零**且**自动化测试（含真实 E2E）100% 通过（`skipped=0`）**，AI 必须明确给出结论：“✅ **核心功能与数据安全已全部收敛闭环，通过交付验收，可以放心发布！**”
-- **附裁定清单 (Rulings)**：用户授权的整段自动流程收尾时，除 DoD 结论外必须附一行一条的【裁定清单】（本阶段 AI 替用户拍板的行为/范围/代价级决定，格式：`裁定 → 判错的代价`；纯实现细节不收；需长期留存的照引擎 1.4 写入 DECISIONS，此处为面向用户的阶段汇总）。**禁止静默裁定。**（工序详见 `EXECUTION.md` §3）
+1. **Mandatory baseline injection** — When the user starts a new project from this scaffold, the AI **must proactively plan** the *Localization & Theme architecture*, *Design Tokens for light/dark*, *SPONSOR.md*, and *FAQ.md* into that project's `SPEC.md` (see `SPEC.md` §6 and §7). These are standard factory settings for every open-source project. Never treat them as optional plugins, and never silently drop them because the user did not ask.
+2. **Disambiguation gate** — If the request lacks a measurable acceptance criterion ("make loading faster", "add an export feature") or has several mutually exclusive architectural routes, **never guess and start coding**. List 2–3 concrete options with trade-offs and let the user decide before writing to SPEC.
+3. **Extract and persist** — **First** update [SPEC.md](SPEC.md) (or the shard under `specs/`) via a file-editing tool, turning the spoken requirement into a written business rule. Do not merely discuss it in chat, and do not silently change code. Open your reply with: *"💡 Synced this requirement to SPEC.md §X.X."*
+   **Exception**: pure confirmation ("ok", "proceed", "go ahead", "agreed") is an execution confirmation, not a requirement change — no SPEC edit needed.
+- **Research on a frozen requirement is exploration, not change** — evaluating alternatives (a different framework, library, or service) for a requirement already frozen in SPEC is exploration. The findings stay **out of SPEC**, and SPEC moves only when the user explicitly changes the requirement.
+4. **Micro-checkpoint protocol** — Before large refactors, cross-file rewrites, or other high-risk changes, run `python tooling/checks/checkpoint.py save "<what I'm about to do>"` so the state can be restored losslessly in milliseconds.
+5. **Decision trail** — For breaking changes or significant architectural rewrites, append a timestamped entry (context / decision / impact) to [docs/DECISIONS.md](docs/DECISIONS.md).
+6. **Defect-driven regression defense** — Write or update the regression test *before* changing implementation. **Anti-tampering red line**: never modify an existing assertion or delete an old test case to make a red suite green. Never use `git commit --no-verify`. Never report completion while tests are failing.
 
 ---
 
-## 核心自动化引擎 3：错误与偏好自我进化 (Self-Learning & Lessons Learned)
+## Engine 2 — 1-to-4 root-cause divergence (1-to-4 Bug Divergence Protocol)
 
-当用户对 AI 的行为进行**纠正、批评或提出开发习惯偏好**时（例如：“不要动我的某个配置”、“测试命令别用全屏”、“函数尽量写纯函数”）：
+When the user asks for an **adversarial review**, raises a doubt, or reports any defect, never fix only the single failing line. From each reported point, **enumerate at least four classes of co-occurring/sibling/upstream-downstream defects** and report the evidence for each:
 
-1. **自动写入避坑清单**：
-   - AI **必须主动调用工具编辑本文件 (AGENTS.md)**，在下方的【历史教训与避坑清单】末尾追加一条明确的负面规则（Negative Constraint）；
-   - 从下一次交互起，该规则将被系统自动加载为不可逾越的红线。
+1. **Lateral pattern scan** — grep the whole repo for the same call shape, syntax pattern, or API usage.
+2. **Boundary & inverse input scan** — null/None, oversized text, special characters, race conditions, unresolved async, network jitter.
+3. **Contract & drift scan** — field naming and types across the boundary, localization/timezone penetration, structured error codes.
+4. **Lifecycle & persistence scan** — stale caches, dirty local storage, state not restored after a reload, residue after logout or a user switch.
 
----
+> 💡 **Output rule**: before fixing, present the four dimensions with explicit findings (either "verified safe" or "found X, fixing it too"). One clue should kill a whole class of defects.
 
-## 通用不可违背的八大开发底线 (Hard Constraints)
+### Severity ladder (P0–P3)
+- **P0 Fatal (blocks delivery)** — data corruption, main-flow deadlock or crash, irreversible operations → **must be zeroed out. Absolute veto.**
+- **P1 Severe (core gap)** — core behavior diverges from SPEC, garbled text, key flow broken → **must be fixed; suite fully green.**
+- **P2 Minor (edge tolerance)** — extreme network jitter, unfriendly copy → **log it as a todo; do not block delivery.**
+- **P3 Cosmetic (theoretical)** — formatting nits, extremely unlikely hypotheticals → **ignore. Never spiral on these.**
 
-1. **单一真理源**：任何业务改动的最终标准以 [SPEC.md](SPEC.md) 为准，代码只是 Spec 的具象化体现。
-2. **非破坏性操作**：严禁未经用户明确许可物理删除已有数据或覆盖受保护的系统配置。
-3. **防测试篡改铁律 (Anti-Test Tampering)**：严禁在测试红灯时通过放宽断言预期（assert/expect）、删除旧用例、注释断言或标注跳过（skip）来伪造全绿！业务实现必须适配测试，绝不允许削弱测试迁就坏代码。物理检测工具见 `scripts/guard_test_tampering.py`。
-4. **禁止硬编码绝对路径 (No Hardcoded Absolute Paths)**：全仓严禁在源码中写入开发机或特定系统的绝对路径（如 `C:\Users\...`, `/home/...`）。所有文件读写与资源定位必须基于基准路径动态推导（如 `Path(__file__).resolve().parent` / `import.meta.url`）或环境变量注入。检测工具见 `scripts/scan_hardcoded_paths.py`。
-5. **人机交互本地化与视觉规范 (Universal Localization & Visual Theming)**：
-   - **交互本地化（适用一切含用户交互/输出的项目）**：零硬编码自然语言文案；服务端/后端严禁拼接面向人类的自然语言句子，一律返回结构化代码（如 `{"error_code": "CODE", "params": {...}}`）；字典必须保证键集双向 100% 镜像对齐（Key Parity）；纯底层无交互库自动豁免。
-   - **视觉主题（仅适用于包含 GUI/Web/移动端界面的项目，纯 CLI/后端自动豁免）**：必须使用语义化 Design Tokens，严禁组件模板裸写固定色值；入口配置防闪烁 (Zero FOUC) 脚本。详见 [templates/I18N_AND_THEME_ARCHITECTURE.md](templates/I18N_AND_THEME_ARCHITECTURE.md)。
-6. **开源标配组件规范 (Standard Open-Source Deliverables)**：
-   - 开源项目必须标配 **[赞助说明 (templates/SPONSOR.md)](templates/SPONSOR.md)** 与 **[常见问题排查 (templates/FAQ.md)](templates/FAQ.md)**，作为项目对外部开发者友好的基础设施。
-7. **交付必须全绿**：改动业务代码后必须主动在后台运行测试，严禁带病提交。
-8. **强制端到端验证 (Mandatory E2E Testing)**：严禁仅依赖 Mock 单元测试！涉及全流程、持久化或关键数据流的改动，必须显式运行端到端物理测试验证全链路真实落盘与流转。严禁将 `skipped` 误报为通过！
-
-## 复杂度开关与证据入口 (Complexity Switch & Evidence)
-
-Starter 采用“通用底座 + 按需扩展”，不要求每个小项目启用完整流程：
-
-1. 小改动或单文件修复：执行本文件、`TESTING.md` 和相关测试即可；不要为了形式创建 Master Plan 或派发 Agent。
-2. 跨模块、数据迁移、不可逆操作或多 Agent 任务：先读 `EXECUTION.md`，必要时启用 `docs/optional/` 下的扩展规范。
-3. `SPEC.md` 记录已确认的产品规则；实现状态、源码位置和运行证据记录在 `docs/REQUIREMENTS_TRACEABILITY.md`。没有实际证据的条目只能写“待验证”或“未运行”。
-4. 真实验证按项目边界选择：浏览器、真实 API、真实数据库、真实文件系统或真实 CLI 均可；低层测试不得冒充更高层的用户链路验收。
-5. 使用外部源码、迁移数据、多步向导流转或可靠性敏感的状态写入时，分别启用 `docs/optional/` 中的 OSS、数据安全、向导流转或可靠性规范；没有适用场景时不要引入这些流程。
+### Convergent Definition of Done
+When the user asks to "converge", "do a final review", or "confirm shippability":
+- Do **not** keep inventing P2/P3 theoretical risks.
+- The bar: **all P0/P1 cleared** and **the automated suite (including real E2E) at 100% with `skipped=0`**. When met, state plainly: *"✅ All core functions and data safety have converged; delivery accepted."*
+- **Attach a Rulings list.** At the end of any authorized autonomous run, besides the DoD verdict, list every behavior/scope/cost-level decision the AI made on the user's behalf, one per line, in the format `ruling → cost of being wrong`. Pure implementation details are excluded; anything long-lived also goes into `docs/DECISIONS.md`. **Never rule silently.** (Procedure: `standards/EXECUTION.md` §3.)
 
 ---
 
-## 历史教训与避坑清单 (Lessons Learned - AI 动态追加区)
+## Engine 3 — Self-learning from errors and preferences
 
-> ⚠️ 本区域由 AI 在接收到用户纠错时**自动编辑追加**，新会话中绝对不可再犯：
-1. **[初始化预设]**：改需求严禁只改业务代码，必须第一时间由 AI 自动同步修改 SPEC.md。
-2. **[初始化预设]**：代码交付前必须确保自动化测试套件全绿，杜绝“修了 A 破坏了 B”。
-3. **[对抗性审查固化]**：Git 提交严禁加 `--no-verify` 参数，必须接受 pre-commit 物理检验。
-4. **[用户严肃纠错固化]**：严禁偷懒只跑纯 Mock 单元测试！每次交付前必须显式运行端到端物理测试（E2E），确保物理链路真实打通。
-5. **[绝对铁律]**：严禁掩耳盗铃将包含 `skipped` 的测试当成“通过”！必须确认用例物理跑过且 `skipped=0`，若因环境受限跳过必须如实向用户声明。
-6. **[Windows 编码红线]**：所有 `subprocess.run(..., text=True)` 必须显式声明 `encoding="utf-8", errors="replace"`，严禁裸用 `text=True` 导致 GBK 解码 UTF-8 出现中文乱码！
-7. **[自嗨测试禁令]**：测试未通过时严禁偷偷篡改旧测试的预期值来伪造全绿，必须正面修复业务实现；任何测试篡改视为严重质量事故。
-8. **[根因全局治理]**：修 Bug 严禁孤立修改单行代码，必须全局排查同类实现，一次性彻底根治。
-9. **[务实调研红线]**：严禁夸夸其谈画大饼或仅凭 Star 数量轻视小型开源项目！必须脚踏实地对候选项目做代码级、可运行级的实证调研，尊重现成轮子并基于客观代码事实下结论。
-10. **[拒绝自嗨跑偏红线]**：用户要求对指定的开源候选软件进行深度剖析和“取其精华、去其糟粕”时，严禁喧宾夺主跑偏去长篇大论其他无关算法细节！必须严格聚焦目标软件本身的功能、实现、优劣与融合策略。
-11. **[防死扣局部细节跑偏铁律]**：当用户在一句话中同时提到“局部技术实现细节（如某个文件转换逻辑）”和“系统全局目标/产品定位（如对标某款软件的体验、吸取一组开源项目的优缺点）”时，**严禁抓着局部细节无限发散！必须永远以用户的终极使用场景和产品体验为纲**，局部实现只能作为支撑服务，严禁反客为主篡改系统主次！
-12. **[防真理源（SPEC）早产与污染]**：在全面调研、代码实证核查未闭环前，严禁凭 AI 主观臆想或局部抓取将未经深思的技术假想写入 `SPEC.md` 核心章节！写入 SPEC 的必须是“用户真实要的核心产品能力与验收标准”，而非 AI 自嗨的技术课题。
-13. **[证据状态分离]**：SPEC 中的需求存在不等于功能已经实现；必须在需求追踪矩阵中分别记录源码、测试、运行结果和未覆盖边界。
-14. **[真实链路分层]**：单元测试、Mock、构建成功和 API 集成测试不能互相冒充真实用户链路；报告必须写清测试层级以及 pass/fail/skipped/未运行。
-15. **[复杂度止损]**：小任务不得套用多 Agent、Master Plan、浏览器 E2E 或 OSS 审计等不适用流程；扩展规范只有在触发条件成立时启用。
-16. **[SPA 入口零缓存铁律]**：SPA 静态入口文件（HTML）在 Web 服务与网关侧必须强制配置 `Cache-Control: no-cache, no-store, must-revalidate`，避免客户端或内嵌宿主（Electron/WebView/iframe）强缓存导致构建产物哈希更新被彻底架空。
-17. **[分步向导非阻塞流转]**：在多步向导、长流程表单或步骤导航中，禁止以“前序单步未完成/未校验”为由阻断用户的前进、后退或跳步交互；步骤切换必须自动持久化草稿并支持幂等还原，前序状态只作校验标识，防呆拦截严格收敛于终局交割动作。
-18. **[受限视口物理预算]**：触屏与移动端适配必须显式剔除桌面特化提示（如键盘快捷键指南）；顶栏必须严格单行紧凑折叠（≤ 44px），核心触发源与当前状态即时反馈必须在首屏内零滚动可见，禁止以“允许页面滚动”替代信息密度治理。
-19. **[凭证零入库]**：真实凭证（管理员口令、API Key、Token、私钥）严禁写入任何被 Git 跟踪的文件——包括测试脚本、种子/初始化脚本、部署脚本、文档示例。需要凭据的脚本一律从环境变量读取；**缺失时必须明确拒绝执行，不得用弱口令或示例值兜底**。
-20. **[推送前脱敏 census]**：向公开仓库推送前，必须全仓扫描并逐项处理：内网 IP / 主机名、真实账号口令、API Key、数据库与构建产物、`.env` 类文件。**先 census 再动手**。
-21. **[历史即公开面]**：凭证一旦被提交，即使后续 commit 删除，**旧提交里依然是明文**。确认泄露时必须改写历史（`git filter-repo --replace-text`），而不是补一个删除提交。
-22. **[1 变 4 根因发散协议]**：用户反馈 Bug 或提出对抗性审查时，必须针对每个问题点联想横向同类、边界逆向、前后端契约、持久化生命周期 4 类共生 Bug 并列出验证证据。
-23. **[绝对路径零容忍]**：严禁硬编码本机文件系统绝对路径，一律使用动态计算相对路径或环境变量。
-24. **[通用多语言门禁]**：严禁伪双语打补丁；交互层禁止裸写自然语言文案，服务端禁止拼接人类可读句子，字典必须双向对齐受门禁守卫；纯算法/无交互项目自动豁免。
-25. **[开源标准交付物]**：开源项目设计时必须自带 SPONSOR.md 赞助模版与 FAQ.md 排查指南。
+When the user **corrects, criticizes, or states a working preference** ("don't touch that config", "no full-screen test output", "prefer pure functions"):
+
+1. **Append to the lessons list** — the AI must proactively edit this file (`AGENTS.md`), appending a negative constraint to the **Lessons Learned** section below.
+2. From the next interaction onward, that rule is loaded as an inviolable red line.
+
+---
+
+## The 8 universal hard constraints
+
+1. **Single source of truth** — [SPEC.md](SPEC.md) is the final standard for any business change. Code is only the materialization of the spec.
+2. **Non-destructive operations** — Never physically delete existing data or overwrite protected system configuration without explicit user permission.
+3. **Anti-test-tampering** — Never manufacture a green suite by relaxing assertions, deleting cases, commenting out assertions, or marking tests skipped. Implementation adapts to tests, never the reverse. Physical detector: `tooling/checks/guard_test_tampering.py`.
+4. **No hardcoded absolute paths** — Never write a developer machine's absolute path (`C:\Users\...`, `/home/...`) into source. Derive paths from the current file's location or inject them via environment variables. Detector: `tooling/checks/scan_hardcoded_paths.py`.
+5. **Localization and visual theming are first-class** — see [standards/LOCALIZATION.md](standards/LOCALIZATION.md).
+   - *Interaction localization (applies to anything with user-facing output)*: zero hardcoded natural-language copy; servers must never concatenate human-readable sentences — return structured codes like `{"error_code": "CODE", "params": {...}}`; dictionaries must be key-for-key aligned (Key Parity). Pure low-level libraries with no interaction are exempt.
+   - *Visual theming (only for projects with a GUI/Web/mobile surface; pure CLI/backend exempt)*: semantic design tokens only, never raw color values in components; entry points must configure anti-flicker (Zero FOUC).
+6. **Standard open-source deliverables** — open-source projects must ship [templates/SPONSOR.md](templates/SPONSOR.md) and [templates/FAQ.md](templates/FAQ.md).
+7. **Delivery must be green** — after changing code, run the tests proactively. Never commit a sick tree.
+8. **Mandatory end-to-end verification** — never rely on mock unit tests alone. Changes touching a full flow, persistence, or a critical data path must run the corresponding real-link verification. Never report `skipped` as passing.
+
+---
+
+## Complexity switch and evidence
+
+The starter is a *general base plus opt-in extensions*. No project must enable the full process.
+
+1. Small change or single-file fix: this file, `standards/TESTING.md`, and the relevant tests are enough. Do not create a Master Plan or dispatch agents for form's sake.
+2. Cross-module work, data migration, irreversible operations, or multi-agent tasks: read `standards/EXECUTION.md` first, then enable the applicable extension under `docs/optional/`.
+3. `SPEC.md` records confirmed product rules; implementation status, source locations, and run evidence live in `docs/REQUIREMENTS_TRACEABILITY.md`. An entry without real evidence may only say "unverified" or "not run".
+4. Choose the verification layer by project boundary: a browser, a real API, a real database, a real filesystem, or a real CLI. Lower-layer tests must never impersonate a higher-layer user path.
+5. Enable the OSS / data-safety / stepper / reliability extensions under `docs/optional/` only when the corresponding situation actually arises.
+
+---
+
+## Lessons Learned (AI-appended)
+
+> ⚠️ The AI appends here automatically whenever the user corrects it. These must never be violated again in a new session.
+
+1. **[Init]** Never change a requirement by editing code alone — sync `SPEC.md` first.
+2. **[Init]** Before delivery, make sure the automated suite is fully green. No "fixed A, broke B".
+3. **[Adversarial review]** Never commit with `--no-verify`; the pre-commit gate must run.
+4. **[User correction]** Never run mock unit tests alone. Run the real end-to-end link before every delivery.
+5. **[Absolute]** Never count a suite containing `skipped` as passing. Confirm the cases physically ran with `skipped=0`; if the environment forced a skip, state it plainly.
+6. **[Windows encoding]** Every `subprocess.run(..., text=True)` must pass `encoding="utf-8", errors="replace"`. Bare `text=True` turns UTF-8 Chinese into GBK mojibake.
+7. **[Self-deceiving tests]** Never quietly edit an old test's expected value to fake a green run. Fix the implementation. Any test tampering is a severe quality incident.
+8. **[Global root-cause treatment]** Never fix a bug by editing one isolated line; sweep the whole project for the same pattern.
+9. **[Pragmatic research]** Never hand-wave or dismiss a small open-source project because of its star count. Do code-level, runnable, empirical evaluation. Respect existing wheels; conclude from code facts.
+10. **[Stay on target]** When asked to dissect a named candidate project and "take the good, drop the bad", do not wander off into unrelated algorithm detail. Stay focused on that project's features, implementation, strengths, weaknesses, and integration strategy.
+11. **[Don't get stuck on local detail]** When one sentence contains both a local technical detail (a file-conversion routine) and a global product goal (matching a competitor's experience), never spiral on the detail. The user's end-user scenario and product experience govern; local implementation serves it. Never let the tail wag the dog.
+12. **[No premature or polluted SPEC]** Until research and empirical verification have converged, never write unverified technical hypotheses into the core sections of `SPEC.md`. SPEC holds *what the user actually wants and how it will be accepted*, not the AI's pet technical topic.
+13. **[Separate evidence states]** A requirement existing in SPEC does not mean it is implemented. Record source, tests, run results, and uncovered boundaries separately in the traceability matrix.
+14. **[Real-link layering]** Unit tests, mocks, a successful build, and API integration tests must not impersonate one another. Reports must state the layer and pass/fail/skipped/not-run.
+15. **[Complexity stop-loss]** Do not apply multi-agent, Master Plan, browser E2E, or OSS audits to small tasks. Enable extensions only when the trigger condition holds.
+16. **[SPA entry, zero cache]** A SPA's static entry (HTML) must be served with `Cache-Control: no-cache, no-store, must-revalidate`. Otherwise hash-busted assets are moot because clients and embedded hosts (Electron/WebView/iframe) keep serving the cached entry.
+17. **[Non-blocking steppers]** In wizards and multi-step flows, never block forward/backward/skip because a previous step is incomplete. Step transitions must auto-persist a draft and restore idempotently; prior state is only a validation marker. Gate strictly at the final commit action.
+18. **[Constrained viewport budget]** Touch/mobile layouts must strip desktop-only affordances (keyboard shortcut hints). The top bar must stay on a single compact line (≤ 44px); the primary trigger and current-state feedback must be visible in the first screen with zero scrolling. Never substitute "the page can scroll" for information-density work.
+19. **[Zero credentials in the repo]** Real credentials (admin passwords, API keys, tokens, private keys) must never be written into any Git-tracked file — including test scripts, seed/init scripts, deploy scripts, and documentation examples. Scripts read them from environment variables and **must fail loudly when they are missing**, never fall back to a weak or example value.
+20. **[Pre-push redaction census]** Before pushing to a public repo, scan the whole tree and handle every item: internal IPs/hostnames, real passwords, API keys, databases and build artifacts, `.env`-like files. **Census first, then act.**
+21. **[History is public]** Once a credential is committed, deleting it in a later commit leaves it in plaintext in the old commits. On confirmed exposure, rewrite history (`git filter-repo --replace-text`) rather than adding a deletion commit.
+22. **[1-to-4 protocol]** On a bug report or adversarial review, enumerate lateral, boundary, contract, and lifecycle sibling defects with evidence.
+23. **[Zero tolerance for absolute paths]** Never hardcode a local filesystem path; derive it dynamically or inject via environment variables.
+24. **[Universal localization gate]** Never patch localization on afterwards. Interaction layers forbid raw copy; servers forbid concatenated human-readable sentences; dictionaries must be bidirectionally aligned under a gate. Pure algorithm/no-interaction projects are exempt.
+25. **[Standard open-source deliverables]** An open-source project must ship SPONSOR.md and FAQ.md.

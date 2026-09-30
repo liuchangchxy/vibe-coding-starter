@@ -121,7 +121,7 @@ def cmd_save(message: str = ""):
     save_checkpoints(store, checkpoints)
 
     print(f"[CHECKPOINT SAVED] #{entry['id']} [{now_str}] '{desc}' (Commit: {commit_sha[:8]})")
-    print("💡 To restore later, run: python scripts/checkpoint.py restore")
+    print("💡 To restore later, run: python tooling/checks/checkpoint.py restore")
 
 
 def cmd_list():
@@ -130,7 +130,7 @@ def cmd_list():
     checkpoints = load_checkpoints(store)
 
     if not checkpoints:
-        print("[INFO] No micro-checkpoints found. Create one with: python scripts/checkpoint.py save")
+        print("[INFO] No micro-checkpoints found. Create one with: python tooling/checks/checkpoint.py save")
         return
 
     print("============================================================")
@@ -212,9 +212,9 @@ def main():
     args = sys.argv[1:]
     if not args or args[0] in ("-h", "--help", "help"):
         print("Usage:")
-        print("  python scripts/checkpoint.py save [message]   # Take a snapshot")
-        print("  python scripts/checkpoint.py list             # View snapshot history")
-        print("  python scripts/checkpoint.py restore [id]     # Restore latest or specific snapshot")
+        print("  python tooling/checks/checkpoint.py save [message]   # Take a snapshot")
+        print("  python tooling/checks/checkpoint.py list             # View snapshot history")
+        print("  python tooling/checks/checkpoint.py restore [id]     # Restore latest or specific snapshot")
         return
 
     action = args[0].lower()

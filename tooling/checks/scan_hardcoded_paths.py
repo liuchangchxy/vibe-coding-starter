@@ -19,7 +19,7 @@ if hasattr(sys.stderr, "reconfigure"):
 
 # 排除目录
 IGNORED_DIRS = {
-    ".git", ".venv", "venv", "node_modules", "__pycache__", 
+    ".git", ".venv", "venv", "node_modules", "__pycache__",
     ".idea", ".vscode", "dist", "build", "coverage", ".pytest_cache"
 }
 
@@ -63,7 +63,7 @@ def main():
             # 排除当前扫描脚本自身以及规则说明文档中举反例的地方
             if p.name in ["scan_hardcoded_paths.py", "FAQ.md", "AGENTS.md", "README.md", "I18N_AND_THEME_ARCHITECTURE.md"]:
                 continue
-            
+
             violations = scan_file(p)
             total_violations.extend(violations)
 

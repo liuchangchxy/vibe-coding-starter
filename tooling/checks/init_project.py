@@ -20,7 +20,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 def init_project(project_name: str = "MyOpenSourceApp"):
-    root = Path(__file__).resolve().parent.parent
+    root = Path(__file__).resolve().parent.parent.parent
     templates_dir = root / "templates"
 
     print("============================================================")
@@ -61,7 +61,7 @@ def init_project(project_name: str = "MyOpenSourceApp"):
         print("✅ [全双语基准] 已创建初始多语言字典骨架 (locales/zh-CN.json, locales/en-US.json)")
 
     # 4. 执行 setup-hooks.py 激活门禁
-    setup_hooks_script = root / "scripts" / "setup-hooks.py"
+    setup_hooks_script = root / "tooling" / "checks" / "setup-hooks.py"
     if setup_hooks_script.exists():
         import subprocess
         subprocess.run([sys.executable, str(setup_hooks_script)], check=False)

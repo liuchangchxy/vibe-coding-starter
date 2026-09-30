@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for scripts/checkpoint.py.
+"""Regression tests for tooling/checks/checkpoint.py.
 
 These cover two defects that shipped in the template and were only found by
 running restore against a real repository:
@@ -21,7 +21,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parent.parent / "scripts" / "checkpoint.py"
+SCRIPT = Path(__file__).resolve().parent.parent / "checks" / "checkpoint.py"
 
 
 class CheckpointRestoreTest(unittest.TestCase):
@@ -59,7 +59,7 @@ class CheckpointRestoreTest(unittest.TestCase):
 
     def _files(self):
         return sorted(
-            p.name for p in self.tmp.iterdir() if p.name not in (".git", "scripts")
+            p.name for p in self.tmp.iterdir() if p.name not in (".git",)
         )
 
     def test_restore_removes_files_added_after_checkpoint(self):

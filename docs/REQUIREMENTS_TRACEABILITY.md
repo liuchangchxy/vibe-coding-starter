@@ -1,29 +1,31 @@
-# 需求追踪与证据矩阵
+# Requirement Traceability Matrix
 
-本文件记录“需求是否真的落地”，不替代 `SPEC.md`。`SPEC.md` 只记录用户确认的产品规则；本矩阵记录实现状态、代码证据和实际运行证据。
+This file records **whether a requirement actually landed**. It does not replace `SPEC.md`. `SPEC.md` holds only confirmed product rules; this matrix holds implementation status, code evidence, and real run evidence.
 
-## 使用规则
+<p align="center"><a href="REQUIREMENTS_TRACEABILITY.md">English</a> · <a href="REQUIREMENTS_TRACEABILITY.zh-CN.md">简体中文</a></p>
 
-- 每个重要需求使用稳定 ID，例如 `REQ-001`。
-- 状态只能使用：`待开发`、`实现中`、`部分完成`、`已验证`、`关闭`。
-- “已验证”必须有实际运行过的测试命令和结果；计划、静态阅读或 Agent 自述都不算证据。
-- `skipped`、未运行或环境受限的验收项必须如实记录，不能写成全绿。
-- 诊断结论、候选方案和未来想法不要写入本表，先由用户确认是否进入 `SPEC.md`。
+## Rules of use
 
-## 矩阵
+- Give every significant requirement a stable ID, e.g. `REQ-001`.
+- Status may only be: `not started`, `in progress`, `partial`, `verified`, `closed`.
+- "Verified" requires a command that was actually run and its result. Plans, static reading, and an agent's self-report are not evidence.
+- `skipped`, not-run, and environment-limited items must be stated as they are. Never write them up as green.
+- Do not put diagnoses, candidate designs, or future ideas here. The user confirms those into `SPEC.md` first.
 
-| ID | SPEC 章节/需求 | 源码位置 | 测试位置与命令 | 结果（pass/fail/skipped） | 状态 | 未覆盖边界/备注 |
+## Matrix
+
+| ID | SPEC section / requirement | Source location | Test location and command | Result (pass/fail/skipped) | Status | Uncovered boundary / notes |
 |---|---|---|---|---|---|---|
-| REQ-001 | `SPEC.md` §[章节] | `[path]:[symbol]` | `[path]`；`[command]` | `[result]` | 待开发 | |
+| REQ-001 | `SPEC.md` §[section] | `[path]:[symbol]` | `[path]`; `[command]` | `[result]` | not started | |
 
-## 阶段报告最小格式
+## Minimum stage-report format
 
 ```text
-需求批次：[名称]
-本次触及：[REQ-xxx]
-源码证据：[文件和符号]
-测试命令及结果：[命令；pass/fail/skipped]
-真实链路：[实际执行的最高层级；未运行原因]
-当前状态：[待开发/实现中/部分完成/已验证/关闭]
-剩余缺口：[逐条列出]
+Requirement batch: [name]
+Touched this round: [REQ-xxx]
+Source evidence: [files and symbols]
+Test command and result: [command; pass/fail/skipped]
+Real link: [highest layer actually executed; reason if not run]
+Current status: [not started / in progress / partial / verified / closed]
+Remaining gaps: [list]
 ```

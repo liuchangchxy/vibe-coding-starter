@@ -1,19 +1,19 @@
-# 开源复用审计
+# Open-Source Reuse Audit
 
-仅在阅读、借鉴或复用外部项目时启用。阅读行为不等于复制源码。
+Enable only when reading, borrowing from, or reusing an external project. Reading is not copying.
 
-## 分类
+<p align="center"><a href="OSS_REUSE_AUDIT_TEMPLATE.md">English</a> · <a href="OSS_REUSE_AUDIT_TEMPLATE.zh-CN.md">简体中文</a></p>
 
-- **源码直接复用/改编**：记录精确源文件、固定 commit、许可证、目标文件和归属保留方式。
-- **行为/测试模式参考**：只记录参考的行为或测试思路，不称为源码移植。
-- **保留本项目实现**：说明比较依据和不替换原因。
-- **不采用/关闭**：说明产品不匹配、许可证、维护成本或证据不足。
-- **待用户确认/待证据**：列出唯一阻塞问题，不得伪装成已批准任务。
+## Classification
+- **Direct source reuse / adaptation**: record the exact source file, pinned commit, license, target file, and how attribution is preserved.
+- **Behavior / test-pattern reference**: record only the behavior or test idea referenced. Never call this a source port.
+- **Keep our own implementation**: state the basis for comparison and why it was not replaced.
+- **Not adopted / closed**: state the product mismatch, license, maintenance cost, or insufficient evidence.
+- **Awaiting user confirmation / awaiting evidence**: list the single blocking question. Never disguise it as an approved task.
 
-## 审计表
-
-| 候选仓库 | 固定 commit | 源文件 | 许可证 | 采用分类 | 目标文件 | Attribution/NOTICE | 测试证据 | 状态 |
+## Audit table
+| Candidate repo | Pinned commit | Source file | License | Classification | Target file | Attribution/NOTICE | Test evidence | Status |
 |---|---|---|---|---|---|---|---|---|
-| `[owner/repo]` | `[sha]` | `[path]` | `[license]` | `[分类]` | `[path]` | `[方式]` | `[path/command]` | `[状态]` |
+| `[owner/repo]` | `[sha]` | `[path]` | `[license]` | `[class]` | `[path]` | `[method]` | `[path/command]` | `[status]` |
 
-许可证未知或不兼容时，不复制源码。GPL/AGPL 等影响必须先单独说明，再由用户决定是否采用其他集成方式。
+When a license is unknown or incompatible, do not copy source. GPL/AGPL implications must be stated separately and the user decides whether to integrate another way.

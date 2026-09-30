@@ -66,7 +66,7 @@ def check_tampering(diff_text: str) -> list[str]:
             current_file = parts[-1].lstrip("b/")
             # 识别测试文件
             is_test_file = any(
-                p in current_file.lower() 
+                p in current_file.lower()
                 for p in ["test_", "_test.", ".spec.", ".test.", "tests/"]
             )
             continue

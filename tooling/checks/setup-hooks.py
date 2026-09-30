@@ -8,7 +8,6 @@ Hardened against:
 4. Python virtual environment isolation (.venv / venv / env)
 """
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -30,11 +29,14 @@ echo " [Git Pre-Commit Gate] Running test suite & security checks..."
 echo "============================================================"
 
 # Pre-checks: Anti-tampering and hardcoded path scans if scripts exist
-if [ -f "scripts/guard_test_tampering.py" ]; then
-    python scripts/guard_test_tampering.py || exit 1
+if [ -f "tooling/checks/guard_test_tampering.py" ]; then
+    python tooling/checks/guard_test_tampering.py || exit 1
 fi
-if [ -f "scripts/scan_hardcoded_paths.py" ]; then
-    python scripts/scan_hardcoded_paths.py || exit 1
+if [ -f "tooling/checks/scan_hardcoded_paths.py" ]; then
+    python tooling/checks/scan_hardcoded_paths.py || exit 1
+fi
+if [ -f "tooling/checks/check_docs.py" ]; then
+    python tooling/checks/check_docs.py || exit 1
 fi
 
 # 1. Check custom test command override
@@ -73,16 +75,16 @@ else
     if [ -f "pytest.ini" ] || [ -f "pyproject.toml" ] || command -v pytest >/dev/null 2>&1; then
         if $PYTHON_EXEC -m pytest --version >/dev/null 2>&1; then
             echo "Running pytest via $PYTHON_EXEC..."
-            $PYTHON_EXEC -m pytest tests/
+            $PYTHON_EXEC -m pytest tooling/tests/
             RESULT=$?
         else
             echo "Running unittest via $PYTHON_EXEC..."
-            $PYTHON_EXEC -m unittest discover -s tests -p "test_*.py"
+            $PYTHON_EXEC -m unittest discover -s tooling/tests -p "test_*.py"
             RESULT=$?
         fi
-    elif [ -d "tests" ] || [ -f "tests/test_smoke.py" ]; then
+    elif [ -d "tooling/tests" ] || [ -f "tooling/tests/test_smoke.py" ]; then
         echo "Running unittest via $PYTHON_EXEC..."
-        $PYTHON_EXEC -m unittest discover -s tests -p "test_*.py"
+        $PYTHON_EXEC -m unittest discover -s tooling/tests -p "test_*.py"
         RESULT=$?
     else
         echo "No standard test suite detected. Skipping gate."
@@ -94,7 +96,7 @@ if [ $RESULT -ne 0 ]; then
     echo ""
     echo "❌ [BLOCKED] Commit rejected! Test suite did not pass 100% green."
     echo "💡 Fix failures or ensure tests pass before committing."
-    echo "💡 To view requirements, check SPEC.md. To inspect rules, check AGENTS.md."
+    echo "💡 To view requirements, check SPEC.md. To inspect rules, check standards/RULES.md."
     echo "============================================================"
     exit 1
 fi
@@ -127,20 +129,8 @@ def resolve_git_hooks_dir(repo_root: Path) -> Path:
     return repo_root / ".git" / "hooks"
 
 
-def activate_ci_if_requested(repo_root: Path):
-    """Optionally activate GitHub Actions CI from templates/ci.yml."""
-    src_ci = repo_root / "templates" / "ci.yml"
-    dest_dir = repo_root / ".github" / "workflows"
-    dest_ci = dest_dir / "ci.yml"
-
-    if src_ci.exists() and not dest_ci.exists():
-        dest_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src_ci, dest_ci)
-        print("[INFO] Activated GitHub Actions workflow at .github/workflows/ci.yml")
-
-
 def main():
-    repo_root = Path(__file__).resolve().parent.parent
+    repo_root = Path(__file__).resolve().parent.parent.parent
     hooks_dir = resolve_git_hooks_dir(repo_root)
 
     if not hooks_dir.parent.exists():
@@ -161,10 +151,8 @@ def main():
     print(f"[SUCCESS] Installed pre-commit hook into {target}")
     print("[INFO] Line endings: Pure Unix LF (POSIX compatible)")
     print("[INFO] Every git commit will now run your tests automatically.")
+    print("[INFO] Remote CI is already live at .github/workflows/ci.yml - nothing to enable.")
 
-    # Check for --enable-ci flag
-    if "--enable-ci" in sys.argv:
-        activate_ci_if_requested(repo_root)
 
 
 if __name__ == "__main__":

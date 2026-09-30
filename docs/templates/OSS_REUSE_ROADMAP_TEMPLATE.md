@@ -1,14 +1,15 @@
-# 开源能力吸收路线图
+# Open-Source Capability Absorption Roadmap
 
-路线图回答“哪些能力值得吸收、以什么方式吸收、当前做到哪里”。它不授权实现代码，也不要求为了复用而增加产品功能。
+Answers "which capabilities are worth absorbing, how, and where we are now". It does not authorize implementation, and it never adds product features for the sake of reuse.
 
-| 候选/能力 | 关联需求 | 采用方式 | 当前证据 | 后续动作 | 状态 |
+<p align="center"><a href="OSS_REUSE_ROADMAP_TEMPLATE.md">English</a> · <a href="OSS_REUSE_ROADMAP_TEMPLATE.zh-CN.md">简体中文</a></p>
+
+| Candidate / capability | Related requirement | Absorption mode | Current evidence | Next action | Status |
 |---|---|---|---|---|---|
-| `[repo]` / `[能力]` | `[SPEC ID]` | 源码/行为参考/保留自研/不采用/待确认 | `[路径和命令]` | `[动作]` | `[状态]` |
+| `[repo]` / `[capability]` | `[SPEC ID]` | source / behavior reference / keep our own / not adopted / pending | `[path and command]` | `[action]` | `[status]` |
 
-## 规则
-
-1. 先固定调研基线，再制定分阶段计划；不要让实现 Agent 重做无关的全量调研。
-2. 每个候选都必须有明确处置，包括“不采用”。
-3. “行为相似”不能写成“源码已复用”。
-4. 只有用户确认的需求才能生成实现批次。
+## Rules
+1. Pin the research baseline before writing a phased plan; do not make an implementation agent redo unrelated research.
+2. Every candidate gets an explicit disposition, including "not adopted".
+3. "Similar behavior" must never be written as "source reused".
+4. Only user-confirmed requirements may generate an implementation batch.

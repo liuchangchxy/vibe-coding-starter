@@ -1,119 +1,114 @@
-# [项目名称] 核心功能规范 (SPEC.md)
+# [Project Name] Core Functional Specification (SPEC.md)
 
-> **文档性质**：本项目唯一业务规范真理源（Single Source of Truth, SSOT）。
-> **核心原则**：所有业务逻辑改动、新功能扩展或缺陷修复，必须**先修订本文档**，再编写测试用例，最后调整实现代码。任何偏离本文档定义的行为均视为 Bug。
+> **Nature of this document**: the single source of truth (SSOT) for this project's business rules.
+> **Core principle**: every business-logic change, new feature, or defect fix must **amend this document first**, then write the test, then adjust the implementation. Any behavior diverging from this document is a bug.
+
+<p align="center"><a href="SPEC.md">English</a> · <a href="SPEC.zh-CN.md">简体中文</a></p>
 
 ---
 
-## 📌 渐进式规范架构说明 (Progressive Spec Architecture)
-- **单体期（轻量）**：项目初期（总规范 < 500 行），所有系统定位、数据流与功能契约直接记录在本文档中。
-- **模块分片期（扩张）**：当系统复杂度上升（总规范 > 500 行），允许将独立子域拆入 `specs/` 目录（例如 [specs/01_example_module.md](specs/01_example_module.md)），并在本文档的【模块索引表】中建立链接，防止长上下文大模型注意力衰减。
+## 📌 Progressive spec architecture
+- **Monolith phase (light)** — early on (spec under 500 lines), positioning, data flow, and feature contracts all live in this file.
+- **Shard phase (grown)** — once complexity rises (spec over 500 lines), split independent sub-domains into `specs/` (e.g. [specs/01_example_module.md](specs/01_example_module.md)) and link them from the module index below, to fight long-context attention decay.
 
-### 模块索引表 (Module Index Map)
-| 模块名称 | 规范文件路径 | 核心职责 | 当前状态 |
+### Module index map
+| Module | Spec path | Responsibility | Status |
 | :--- | :--- | :--- | :--- |
-| **全局主控** | 本文档 (`SPEC.md`) | 系统总架构、通用数据流、跨模块协议 | 激活 |
-| *[示例模块]* | `specs/01_example_module.md` | *[拆分的子业务逻辑]* | *待启用* |
+| **Global** | this file (`SPEC.md`) | Overall architecture, shared data flow, cross-module protocol | Active |
+| *[example module]* | `specs/01_example_module.md` | *[sharded sub-domain]* | *Pending* |
 
 ---
 
-## 1. 系统定位与核心价值
+## 1. Positioning and core value
 
-- **项目名称**：[填入项目名称]
-- **一句话定位**：[用一句话描述本系统解决的核心问题]
-- **目标用户与核心场景**：
-  - 场景 1：[核心使用场景与期望产出]
-  - 场景 2：[次要使用场景与期望产出]
-- **核心非功能性指标**：（如响应时间、并发、资源占用、数据安全性等）
+- **Project name**: [fill in]
+- **One-line positioning**: [what core problem this system solves]
+- **Target users and core scenarios**:
+  - Scenario 1: [primary scenario and expected outcome]
+  - Scenario 2: [secondary scenario and expected outcome]
+- **Non-functional targets**: [latency, concurrency, footprint, data safety, …]
 
 ---
 
-## 2. 系统架构与数据流转
+## 2. Architecture and data flow
 
 ```mermaid
 flowchart LR
-    Input[用户输入 / 外部数据] --> Core(核心处理模块)
-    Core --> Storage[(数据持久化 / 状态机)]
-    Core --> Output[最终交付物 / 用户界面]
+    Input[User input / external data] --> Core(Core processing)
+    Core --> Storage[(Persistence / state machine)]
+    Core --> Output[Deliverable / UI]
 ```
 
-### 核心模块划分
-1. **输入层**：[负责处理什么]
-2. **核心业务层**：[负责处理什么]
-3. **输出/展示层**：[负责处理什么]
+### Core modules
+1. **Input layer**: [what it handles]
+2. **Core business layer**: [what it handles]
+3. **Output / presentation layer**: [what it handles]
 
 ---
 
-## 3. 功能清单与业务规则契约 (Feature Matrix)
+## 3. Feature matrix and business rule contracts
 
-### 3.1 核心功能 A：[功能名称]
-- **业务描述**：[详细描述该功能具体做什么]
-- **输入参数 / 条件**：[触发该功能的条件]
-- **业务规则契约**：
-  - 规则 1：[具体规则]
-  - 规则 2：[具体规则]
-- **期望输出 / 状态变迁**：[完成后系统状态]
+### 3.1 Core feature A: [name]
+- **Description**: [what it does]
+- **Inputs / preconditions**: [what triggers it]
+- **Business rules**:
+  - Rule 1: [concrete rule]
+  - Rule 2: [concrete rule]
+- **Expected output / state transition**: [resulting state]
 
-### 3.2 核心功能 B：[功能名称]
-- **业务描述**：[详细描述该功能具体做什么]
-- **业务规则契约**：
-  - 规则 1：[具体规则]
+### 3.2 Core feature B: [name]
+- **Description**: [what it does]
+- **Business rules**:
+  - Rule 1: [concrete rule]
 
 ---
 
-## 4. 数据结构与接口契约 (Data Contracts)
+## 4. Data structures and interface contracts
 
-### 4.1 核心实体数据结构
+### 4.1 Core entity
 ```json
 {
-  "id": "string (唯一标识)",
-  "title": "string (名称)",
-  "created_at": "string (ISO-8601 时间戳)",
+  "id": "string (unique identifier)",
+  "title": "string (name)",
+  "created_at": "string (ISO-8601 timestamp)",
   "status": "pending | processing | completed | failed"
 }
 ```
 
-### 4.2 核心接口契约 (API / CLI)
-| 接口 / 命令 | 输入参数 | 返回值 / 结果 | 说明 |
+### 4.2 Interface contract (API / CLI)
+| Interface / command | Input | Output | Notes |
 | :--- | :--- | :--- | :--- |
-| `doSomething(id)` | `{ id: string }` | `{ success: bool }` | 执行核心操作 |
+| `doSomething(id)` | `{ id: string }` | `{ success: bool }` | Performs the core operation |
 
 ---
 
-## 5. 边缘情况与边界防御 (Edge Cases)
+## 5. Edge cases and boundary defenses
 
-1. **空数据 / 极端数据防御**：[如输入为空、超大文件或非法字符时的预期表现]
-2. **并发 / 状态冲突防御**：[如多次重复点击或多任务并行时的幂等保护]
-3. **网络与环境异常容错**：[如断网、超时、文件只读时的平滑回退表现]
-
----
-
-## 6. 开源项目标准交付物基础设施 (Open-Source Deliverables Baseline)
-
-> 💡 **刚性铁律**：所有基于本脚手架衍生的开源项目，必须标配以下交付组件，严禁作为次要项遗漏：
-
-1. **开源赞助与打赏渠道 (`SPONSOR.md`)**：
-   - 必须在仓库根目录提供标准的 `SPONSOR.md`（参照 `templates/SPONSOR.md`）；
-   - 明确国内平台（微信赞赏、支付宝、爱发电）及国际平台（GitHub Sponsors、Buy Me a Coffee）配置说明与资金透明度说明；
-   - 包含赞助者鸣谢墙（Wall of Fame）模版。
-2. **常见问题与故障排查指南 (`FAQ.md`)**：
-   - 必须在仓库根目录提供标准的 `FAQ.md`（参照 `templates/FAQ.md`）；
-   - 覆盖跨平台路径与编码问题、常见依赖冲突、典型业务报错与自救排查路径。
+1. **Empty / extreme data**: [expected behavior for empty input, oversized files, illegal characters]
+2. **Concurrency / state conflict**: [idempotency when a button is double-clicked or tasks run in parallel]
+3. **Network and environment faults**: [graceful fallback on disconnect, timeout, read-only filesystem]
 
 ---
 
-## 7. 人机交互本地化与视觉主题契约 (Localization & Visual Theming Contract)
+## 6. Open-source deliverables baseline
 
-> 💡 **设计红线**：只要项目包含用户文案交互或视觉界面，本地化与主题必须作为**一等公民（First-Class Dimension）**设计（纯无交互底层算法库自动豁免；详见 `templates/I18N_AND_THEME_ARCHITECTURE.md`）：
+> 💡 **Hard rule**: every open-source project derived from this scaffold must ship the following. Never omit them as minor items.
 
-1. **通用本地化规则（适用一切含用户交互/输出的项目）**：
-   - **零裸文本**：交互界面或命令行输出严禁裸写硬编码自然语言，统一通过语言字典管理；
-   - **服务端禁拼自然语言**：接口一律返回结构化错误码与元数据（`{"error_code": "...", "params": {...}}`），由展示层查字典翻译；全局请求自动携带 `Accept-Language`；
-   - **字典键双向对齐 (Key Parity)**：`locales/zh-CN.json` 与 `locales/en-US.json` 键集必须 100% 镜像对齐，物理门禁拦截任何漏译；
-   - **排版弹性**：具备视图的项目必须预留至少 30%~50% 水平伸缩预算，严禁硬编码固定像素导致多语言文字折行爆裂。
-2. **日夜模式与 Design Tokens（仅适用于包含 GUI/Web/移动端项目）**：
-   - **单一真理源**：全局统一管理 `light` | `dark` | `system`，持久化并派发到根渲染容器；
-   - **语义化 Design Tokens**：严禁裸写固定色值，全部通过语义变量定义并自适应；
-   - **防闪烁 (Zero FOUC)**：Web/DOM 环境必须在入口内联早期主题注入脚本，杜绝渲染前白屏闪烁。
+1. **Sponsorship channels (`SPONSOR.md`)** — provide a standard `SPONSOR.md` at the repository root (see [templates/SPONSOR.md](templates/SPONSOR.md)); cover domestic platforms (WeChat Pay, Alipay, Afdian) and international ones (GitHub Sponsors, Buy Me a Coffee); include fund-transparency notes and a backers wall template.
+2. **FAQ and troubleshooting guide (`FAQ.md`)** — provide a standard `FAQ.md` at the repository root (see [templates/FAQ.md](templates/FAQ.md)); cover cross-platform path and encoding problems, common dependency conflicts, and typical error self-service paths.
 
+---
 
+## 7. Localization and visual theming contract
+
+> 💡 **Design red line**: if the project has any user-facing copy or visual surface, localization and theming are **first-class dimensions** (pure non-interactive algorithm libraries are exempt; see [standards/LOCALIZATION.md](standards/LOCALIZATION.md)).
+
+1. **Universal localization rules (any project with user interaction or output)**
+   - **Zero raw text**: UI or CLI output must never hardcode natural language; route every string through a dictionary.
+   - **No concatenated sentences on the server**: interfaces return structured error codes and metadata (`{"error_code": "...", "params": {...}}`) which the presentation layer translates. Every request carries `Accept-Language`.
+   - **Key parity**: the main-language and target-language dictionaries must be 100% mirrored. The gate physically blocks any missing translation.
+   - **Layout elasticity**: any project with a view must budget **30%–50%** horizontal headroom. Never hardcode pixel widths that make translated text wrap or explode.
+2. **Light/dark mode and design tokens (only for GUI/Web/mobile projects)**
+   - **Single source of truth**: manage `light` | `dark` | `system` in one place, persist it, and dispatch it to the root render container.
+   - **Semantic design tokens**: never write raw color values; define everything through semantic variables that adapt automatically.
+   - **Zero FOUC**: Web/DOM environments must inline an early theme-injection script at the entry point so nothing flickers before render.

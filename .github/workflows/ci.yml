@@ -1,0 +1,38 @@
+name: Gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  gates:
+    name: Document gate, source scans, and test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Proves the document gate can go red before trusting its verdict.
+      - name: Document gate self-proof
+        run: python tooling/checks/check_docs.py --selftest
+
+      # Bilingual parity, structure parity, and rule-index integrity.
+      - name: Document gate
+        run: python tooling/checks/check_docs.py
+
+      - name: Hardcoded absolute path scan
+        run: python tooling/checks/scan_hardcoded_paths.py
+
+      - name: Test assertion tampering scan
+        run: python tooling/checks/guard_test_tampering.py
+
+      - name: Whitespace and line-ending check
+        run: python tooling/checks/check_whitespace.py
+
+      - name: Test suite
+        run: python -m unittest discover -s tooling/tests -p "test_*.py" -v

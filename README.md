@@ -1,7 +1,7 @@
 # ⚡ Vibe Coding Starter
 
 <p align="center">
-  <strong>专为 AI Agent 结对编程打造的“防翻车”通用工业级规范模版 (Spec-Driven Vibe Coding Starter)</strong>
+  <strong>An industrial-grade, anti-crash specification template built for AI-agent pair programming (Spec-Driven Vibe Coding).</strong>
 </p>
 
 <p align="center">
@@ -10,123 +10,155 @@
   <img src="https://img.shields.io/badge/Gate-Pre--Commit%20%2B%20CI%20Hard%20Lock-purple?style=flat-square" alt="CI Gate">
   <img src="https://img.shields.io/badge/Sandbox-DevContainer%20Ready-orange?style=flat-square" alt="DevContainer">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+  <img src="https://img.shields.io/badge/Docs-Bilingual%20%28EN%20%2F%20zh--CN%29-informational?style=flat-square" alt="Bilingual">
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
 ---
 
-## 💡 为什么需要这个模版？
+## 💡 Why this template?
 
-**“Vibe Coding（氛围编程）”** 让你只动嘴提需求就能快速成型项目，但几乎所有人都会遇到所谓的 **“Vibe Drift（上下文腐化 / 需求漂移）”** 绝症：
-- **缺乏单一真理源**：上下文一长 AI 就失忆，修了 A 破坏了前天写好的 B；
-- **反复横跳改回去**：测试中边测边提意见，没有落在纸面上的规范，代码改来改去最终退化；
-- **缺乏物理防线**：没有自动化测试与 Git 提交门禁，坏代码直接进入仓库；
-- **缺少后悔药与沙盒**：AI 一旦改崩多个文件难以秒级撤销，跨平台环境依赖容易出现“本地跑通，远端报错”。
+**Vibe Coding** lets you ship fast by just describing what you want — but almost everyone hits the same disease: **Vibe Drift**.
+- **No single source of truth** — once the context grows, the agent forgets; you fix A and break B from two days ago.
+- **Endless back-and-forth** — feedback happens in chat, never lands on paper, and the code degrades.
+- **No physical defenses** — no automated tests, no commit gate; bad code walks straight into the repo.
+- **No undo, no sandbox** — when the agent wrecks ten files, you can't roll back in seconds; "works on my machine" strikes.
 
-**Vibe Coding Starter** 通过 **【自动需求入库 SPEC】 + 【自学习避坑清单】 + 【物理级测试提交门禁】 + 【秒级影子微快照】 + 【渐进式分片与容器化】**，把初级的“纯聊天盲改”升级为真正的 **工业级规范驱动开发 (Spec-Driven Development, SDD)**。
+**Vibe Coding Starter** upgrades plain "chat and pray" into real **Spec-Driven Development (SDD)** with five engines: *auto-persist intent into SPEC*, *self-learning lessons list*, *physical commit/CI gates*, *second-level micro-snapshots*, and *progressive spec sharding + containerized sandbox*.
 
 ---
 
-## ⚙️ 核心架构与 5 大自动化引擎
+## ⚙️ Architecture and the 5 engines
 
 ```mermaid
 flowchart TD
-    User["你动嘴说：<br/>'这个功能改成XXX' / '测试发现Bug'"] --> Agent[AI Agent 收到意图]
-    Agent --> Check{"AGENTS.md 触发器拦截"}
-    Check -->|需求模糊| Ask["【引擎 1：歧义反问】<br/>AI 列出 2~3 个选项让用户拍板"]
-    Check -->|需求明确| AutoSpec["【引擎 2：意图持久化】<br/>AI 自动更新 SPEC.md (或 specs/ 分片)"]
-    Check -->|操作纠错| AutoLearn["【引擎 3：自进化避坑】<br/>AI 自动将教训写入 AGENTS.md 避坑清单"]
-    AutoSpec --> Snap["【引擎 4：秒级微快照】<br/>AI 自动打下本地 shadow 快照以备回滚"]
-    Snap --> AutoCode["AI 编写业务代码与测试用例<br/>(严禁反向篡改旧测试)"]
-    AutoCode --> TestRun["【引擎 5：双层硬拦截】<br/>本地 pre-commit 钩子 + GitHub Actions CI 自动测试"]
-    TestRun -->|全绿| Push["安全提交，杜绝功能回退！"]
+    User["You say: 'change this feature' / 'test found a bug'"] --> Agent[AI Agent receives intent]
+    Agent --> Check{"AGENTS.md trigger"}
+    Check -->|Ambiguous| Ask["Engine 1: Disambiguation<br/>AI lists 2-3 options for you to pick"]
+    Check -->|Clear| AutoSpec["Engine 2: Intent persistence<br/>AI updates SPEC.md (or specs/ shard)"]
+    Check -->|Correction| AutoLearn["Engine 3: Self-learning<br/>AI appends the lesson to AGENTS.md"]
+    AutoSpec --> Snap["Engine 4: Micro-snapshot<br/>AI takes a local shadow snapshot for rollback"]
+    Snap --> AutoCode["AI writes business code and tests<br/>(tampering with old assertions is forbidden)"]
+    AutoCode --> TestRun["Engine 5: Two-layer hard gate<br/>local pre-commit hook + GitHub Actions CI"]
+    TestRun -->|All green| Push["Commit safely - no regressions"]
 ```
 
-### 1. 引擎一：口头意图自动持久化 (`SPEC.md` 与 `specs/`)
-- 你不需要自己写文档！你只需在对话框里大白话提要求；
-- `AGENTS.md` 规则强制约束 AI **禁止凭空盲改代码**，必须第一步自动调用工具修改 [SPEC.md](SPEC.md)；
-- **渐进式分片支持**：项目小时（< 500 行）全在一处；项目变大后自动拆入 [specs/](specs/) 细分子模块，防大模型长上下文注意力衰减。
+### 1. Engine 1 — Auto-persist spoken intent (`SPEC.md` and `specs/`)
+- You never write the spec by hand. Just describe the requirement in plain language.
+- `AGENTS.md` forbids the agent from editing code first: step one is always to update [SPEC.md](SPEC.md).
+- **Progressive sharding**: under 500 lines everything lives in one file; beyond that, split sub-domains into [specs/](specs/) to fight long-context attention decay.
 
-### 2. 引擎二：错误与偏好自我进化 (`AGENTS.md`)
-- 当你纠正 AI（例如：“别动某个配置”、“不要写这种代码”）；
-- AI 会自动把该教训追加写入 `AGENTS.md` 底部的 **【历史教训与避坑清单】**；
-- 规则永久沉淀进系统提示词，真正做到“吃一堑长一智”，绝不再犯同类错误。
+### 2. Engine 2 — Self-learning lessons (`AGENTS.md`)
+- When you correct the agent ("don't touch that config", "never write code like this"), it appends the lesson to the **Lessons Learned** section at the bottom of `AGENTS.md`.
+- The rule is then loaded in every future session. Once bitten, permanently shy.
 
-### 3. 引擎三：物理级双层防倒退锁 (`TESTING.md`)
-- **防测试篡改**：严禁 AI 通过放宽断言预期或删除测试来伪造绿灯；
-- **本地门禁 (`.git/hooks/pre-commit`)**：跨平台（Unix/Windows CRLF 免杀）纯 Unix LF 解释器兼容；支持 Python (.venv 自动探测与 pytest 回退)、Node.js (`npm test`)、Go (`go test`)、Rust (`cargo test`)；每次 `git commit` 秒级跑测，测试红灯物理拒绝提交；
-- **远端门禁 (`templates/ci.yml`)**：一键激活 GitHub Actions，在干净虚拟机矩阵上回归测试，杜绝“带病合入”。
+### 3. Engine 3 — Two-layer physical regression lock (`standards/TESTING.md`)
+- **Anti-test-tampering**: weakening assertions or deleting tests to fake a green run is a quality incident, not a fix.
+- **Local gate** (`.git/hooks/pre-commit`): runs the suite on every commit and physically refuses a red tree. Auto-detects Python (`.venv` + pytest fallback), Node (`npm test`), Go (`go test`), Rust (`cargo test`).
+- **Remote gate** (`.github/workflows/ci.yml`): GitHub Actions runs the same suite on a clean runner matrix. Red never merges.
 
-### 4. 引擎四：秒级无损微快照与后悔药 (`scripts/checkpoint.py`)
-- 在 AI 即将进行跨文件大重构前，提供无痛快照：
-  ```bash
-  # 保存快照 (不产生无用 commit，不污染历史)
-  python scripts/checkpoint.py save "重构核心模块前"
-
-  # 查看快照历史
-  python scripts/checkpoint.py list
-
-  # 改乱了一秒撤销
-  python scripts/checkpoint.py restore
-  ```
-
-### 5. 引擎五：开箱即用的气密开发容器 (`.devcontainer/`)
-- 预置行业通用开发容器配置，换电脑或多环境部署时，在 VSCode/Cursor 中点击 **“Reopen in Container”**，瞬间获得一致的气密纯净环境，告别依赖缺失。
-
----
-
-## 🚀 极速上手使用指南
-
-### 第一步：基于本模板创建新项目
-点击本仓库右上角的绿色按钮 **[Use this template]** ➔ **[Create a new repository]**。
-
-### 第二步：Clone 到本地并激活门禁
+### 4. Engine 4 — Second-level micro-snapshots (`tooling/checks/checkpoint.py`)
 ```bash
-git clone <你的新项目仓库地址>
-cd <你的新项目文件夹>
+# Save a snapshot (no junk commits, no history pollution)
+python tooling/checks/checkpoint.py save "before refactoring the core module"
 
-# 一键安装本地 pre-commit 提交硬门禁 (跨平台支持，纯 LF 防炸裂)
-python scripts/setup-hooks.py
+# List snapshots
+python tooling/checks/checkpoint.py list
 
-# 💡 提示：若希望同时激活 GitHub Actions 远端 CI，可加上 --enable-ci 参数：
-# python scripts/setup-hooks.py --enable-ci
+# Wrecked it? Roll back in one second (your dirty tree is stashed first)
+python tooling/checks/checkpoint.py restore
 ```
 
-### 第三步：一句话唤醒 AI 开始 Vibe Coding！
-打开你的 AI 工具（**Anti Gravity**、**Cursor**、**Claude Code** 等），直接对它说第一句话：
-
-> 🗣️ *“这是一个基于 Vibe Coding Starter 初始化的新项目。我们打算做一个 [你的项目想法，例如：一个极简的命令行剪贴板管理工具]。请首先阅读 AGENTS.md，然后帮我完善 SPEC.md 中的系统定位、架构与核心功能清单，并建立初始测试用例！”*
+### 5. Engine 5 — Air-gapped dev container (`.devcontainer/`)
+A preconfigured container spec. On any machine, click **"Reopen in Container"** in VS Code or Cursor and get an identical, dependency-complete environment.
 
 ---
 
-## 📁 目录文件清单
+## 🚀 Quick start
 
-| 资产文件 | 作用与定位 |
-| :--- | :--- |
-| **`AGENTS.md`** | **AI 核心宪法**：约束 AI 自动改 SPEC、1变4根因发散、防测试篡改、双语与路径底线 |
-| **`SPEC.md`** | **单一真理源 (SSOT)**：支持单体到模块分片的渐进式架构规范模板 |
-| **`specs/`** | **分片规约插槽**：承载大型系统细分子模块 Spec 的专属目录 |
-| **`templates/I18N_AND_THEME_ARCHITECTURE.md`** | **双语与主题架构**：五层穿透全双语、开源 Lint 门禁与零闪烁暗黑模式规约 |
-| **`templates/SPONSOR.md`** | **开源赞助模版**：国内/国际多渠道赞助与鸣谢墙标准化模版 |
-| **`templates/FAQ.md`** | **排查指南模版**：常见问题解答与跨平台避坑标准化模版 |
-| **`scripts/checkpoint.py`** | **秒级快照管理器**：提供无损保存与一键还原后悔药 |
-| **`scripts/guard_test_tampering.py`** | **防测试篡改守卫**：物理检测 Git 变更中对既有测试断言的删除与篡改 |
-| **`scripts/scan_hardcoded_paths.py`** | **硬编码路径扫描器**：静态扫描源码中的物理绝对路径，保障跨机器可移植性 |
-| **`.devcontainer/`** | **气密开发容器**：VSCode / Cursor 官方标准化沙盒开发环境 |
-| **`DECISIONS.md`** | **决策账本**：记录“为什么改需求”的微日志时间线 (Lightweight ADR) |
-| **`TESTING.md`** | **工程测试守则**：规定“缺陷即测试”、1变4排查、防测试篡改与物理门禁 |
-| **`docs/REQUIREMENTS_TRACEABILITY.md`** | **需求追踪矩阵**：分离“需求存在”与“功能已验证”，记录源码、测试和实际运行证据 |
-| **`docs/templates/`** | **可复制模板**：计划、测试证据和 OSS 复用审计模板 |
-| **`docs/optional/`** | **按需扩展**：数据安全、可靠性和多 Agent 规范；小项目无需启用 |
-| **`.agents/skills/sdd-implementation/`** | **通用 SDD Skill**：把确认范围、测试、实现、验证和证据更新串成最小节拍 |
-| **`EXECUTION.md`** | **多代理执行工序**：简报/报告/diff 审查包、Fix 循环、阶段终审、Rulings 裁定披露（含规模旋钮与宿主适配） |
-| **`REVIEWING.md`** | **对抗性审查配方**：空转测试、边界数学、证据链倒挂、自证向量、跨端键一致性五攻击法 |
-| **`ARCHITECTURE.md`** | **顶层架构推导法**：七步法 + “改得便宜/用得难错/坏了能看见”三判据 + 抄/造分层判据 |
-| **`.cursorrules`** | **多 IDE 兼容**：让 Cursor 等编辑器原生对齐本套工作流 |
-| **`scripts/setup-hooks.py`**| **本地门禁安装器**：一键写入 `.git/hooks/pre-commit` (支持虚拟环境与多语言) |
-| **`templates/ci.yml`** | **GitHub Actions CI 模版**：远端持续集成全量测试工作流模版 |
-| **`tests/test_smoke.py`** | **基准冒烟测试**：保证开箱即通 (100% Green Out of the Box) |
+### Step 1 — Create your project from this template
+Click **[Use this template]** → **[Create a new repository]**.
+
+### Step 2 — Clone and arm the gates
+```bash
+git clone <your-new-repo-url>
+cd <your-new-project>
+
+# Install the local pre-commit gate (cross-platform, LF-only)
+python tooling/checks/setup-hooks.py
+```
+
+### Step 3 — Wake the agent with one sentence
+Open your AI tool (**Anti Gravity**, **Cursor**, **Claude Code**, …) and say:
+
+> 🗣️ *"This is a new project initialized from Vibe Coding Starter. We're building [your idea]. Read AGENTS.md first, then help me fill in the positioning, architecture, and feature matrix in SPEC.md, and set up the initial test suite."*
 
 ---
 
-## 📄 开源协议
-本项目采用 [MIT License](LICENSE) 开源协议。
+## 📁 Repository layout
+
+The tree is **layered by responsibility**. Anything convention-bound (README, AGENTS, SPEC, .cursorrules, .devcontainer) stays at the root; everything else lives in its layer.
+
+```
+/
+├── README.md / README.zh-CN.md      Entry point (this file)
+├── AGENTS.md / AGENTS.zh-CN.md      AI constitution - the highest-priority rules
+├── SPEC.md / SPEC.zh-CN.md          Single source of truth for YOUR project
+│
+├── standards/                       Mother standards: how to do engineering
+│   ├── RULES.md                     Master rule index (every rule, one ID, one home)
+│   ├── TESTING.md                   Gates + Definition of Done
+│   ├── REVIEWING.md                 Adversarial review recipes
+│   ├── EXECUTION.md                 Multi-task execution loop
+│   ├── ARCHITECTURE.md              Top-down architecture derivation
+│   └── LOCALIZATION.md              i18n + theming architecture
+│
+├── docs/                            Your project's records
+│   ├── DECISIONS.md                 Lightweight ADR timeline
+│   ├── REQUIREMENTS_TRACEABILITY.md Requirement ↔ evidence matrix
+│   ├── optional/                    Capability-gated extensions
+│   └── templates/                   Working templates (plan, evidence, OSS audit)
+│
+├── templates/                       Files copied into a new project's root
+│   ├── SPONSOR.md                   Sponsorship + backers wall
+│   └── FAQ.md                       Troubleshooting guide
+│
+├── specs/                           Progressive spec shards
+├── tooling/
+│   ├── checks/                      Gate scripts
+│   └── tests/                       Test suite + visual smoke
+├── .github/workflows/ci.yml         Remote CI gate (live, not just a template)
+└── .agents/, .cursorrules, .devcontainer/   Host entry points
+```
+
+### Which file do I edit?
+
+| I want to… | Edit | Then run |
+|---|---|---|
+| Change what the product does | `SPEC.md` | — |
+| Record why a decision was made | `docs/DECISIONS.md` | — |
+| Prove a requirement is actually done | `docs/REQUIREMENTS_TRACEABILITY.md` | — |
+| Fix a bug | `standards/TESTING.md` §1 (test first) | the suite |
+| Add or change a gate | `standards/TESTING.md`, then `standards/RULES.md` | `tooling/checks/*` |
+| Add a UI language or theme | `standards/LOCALIZATION.md` | `tooling/checks/check_docs.py` |
+| Teach the agent a lesson | `AGENTS.md` (Lessons Learned) | — |
+
+---
+
+## 🌐 Bilingual policy
+
+Every Markdown document exists in **two mirrored files**:
+
+- `NAME.md` — **English** (the default, so GitHub renders it)
+- `NAME.zh-CN.md` — **简体中文**
+
+Both are first-class. Chinese is the authoring source; English mirrors it. `tooling/checks/check_docs.py` fails CI if a document exists in only one language, so neither side can silently rot.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)

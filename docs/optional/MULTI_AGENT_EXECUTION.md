@@ -1,12 +1,13 @@
-# 多 Agent 协作扩展规范
+# Multi-Agent Collaboration Extension
 
-仅在任务确实需要并行调研、跨模块协作或独立审查时启用。小任务使用单 Agent，避免流程成本超过任务本身。
+Enable only when work genuinely needs parallel research, cross-module collaboration, or independent review. Small tasks use a single agent — process cost must not exceed the task.
 
-## 推荐边界
+<p align="center"><a href="MULTI_AGENT_EXECUTION.md">English</a> · <a href="MULTI_AGENT_EXECUTION.zh-CN.md">简体中文</a></p>
 
-- 只读调研 Agent：读取指定文件和证据，不能修改工作树。
-- 实现 Agent：只执行已确认的叶子计划。
-- 审查 Agent：只检查需求、差异、测试和证据。
-- 主 Agent：统一裁决冲突、合并结论和落盘。
+## Recommended boundaries
+- **Read-only research agent**: reads named files and evidence; must not modify the working tree.
+- **Implementation agent**: executes only a confirmed leaf plan.
+- **Review agent**: examines only requirements, diffs, tests, and evidence.
+- **Lead agent**: rules on conflicts, merges conclusions, and persists them.
 
-多个 Agent 不应同时无边界修改同一组共享文件。每个子任务必须说明范围、输入、输出、证据路径和不确定项。
+Multiple agents must not simultaneously edit the same shared files without boundaries. Every subtask states its scope, inputs, outputs, evidence path, and uncertainties.

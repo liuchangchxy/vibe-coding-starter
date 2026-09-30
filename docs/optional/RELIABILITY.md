@@ -1,11 +1,12 @@
-# 可靠性扩展规范：幂等、重试与终结状态
+# Reliability Extension: Idempotency, Retry, and Terminal States
 
-仅在请求会改变持久状态、触发外部副作用或可能因网络重试而重复执行时启用。
+Enable only when a request mutates persisted state, triggers an external side effect, or could be executed twice because of a network retry.
 
-## 最小要求
+<p align="center"><a href="RELIABILITY.md">English</a> · <a href="RELIABILITY.zh-CN.md">简体中文</a></p>
 
-1. 状态写入具有稳定的幂等身份，例如请求 ID、业务键或幂等键。
-2. 同一操作重复提交不会重复插入、重复计费、重复发消息或重复推进状态。
-3. 已完成、已取消或已关闭的终结状态由服务端拒绝后续非法写入。
-4. 重试策略区分可重试错误和不可重试错误，并保留失败原因。
-5. 测试至少覆盖首次成功、失败后重试、重复提交和终结状态拒绝。
+## Minimum requirements
+1. State writes carry a stable idempotency identity — a request ID, a business key, or an idempotency key.
+2. Re-submitting the same operation does not double-insert, double-charge, double-send, or double-advance state.
+3. Completed, cancelled, and closed terminal states reject further illegal writes at the server.
+4. Retry policy distinguishes retryable from non-retryable errors and preserves the failure reason.
+5. Tests cover at least: first success, retry after failure, duplicate submission, and terminal-state rejection.

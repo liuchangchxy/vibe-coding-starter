@@ -1,6 +1,6 @@
 # 对抗性审查配方 (REVIEWING.md)
 
-> **定位**：审查 = **发现期**。修复期必须回到 `TESTING.md` 铁律“根因全局治理（RCA）”——发现一处，修复时全局清扫同类，严禁孤立改单行。
+> **定位**：审查 = **发现期**。修复期必须回到 `standards/TESTING.md` §一.5「1 变 4 根因发散」——发现一处，修复时全局清扫同类，严禁孤立改单行。
 > 输出纪律：审查者**必须亲手重跑门禁**（analyze/test），禁止只读实现者的报告就下结论；diff 范围之外发现的问题标注“⚠️ 范围外”，交上级裁决，不许自行扩权修改。
 
 ---
@@ -47,6 +47,6 @@
 
 ## 与其它文档的衔接
 
-- 发现的缺陷如何修 → `TESTING.md` 铁律 1（缺陷即测试）+ 铁律 3（RCA 全局清扫）；
-- 何时停止审查 → `TESTING.md` DoD（P0/P1 清零 + 测试 100% `skipped=0`）；
-- 审查发现的去向 → `EXECUTION.md` §2 carry-forward（账本 → 下任务 → ROADMAP 三级落点）。
+- 发现的缺陷如何修 → `standards/TESTING.md` §一.1（缺陷即测试）+ §一.5（1 变 4 全局清扫）；
+- 何时停止审查 → `standards/TESTING.md` §三 DoD（P0/P1 清零 + 测试 100% `skipped=0`）；
+- 审查发现的去向 → `standards/EXECUTION.md` §2 carry-forward（账本 → 下任务 → ROADMAP 三级落点）。
