@@ -77,12 +77,9 @@
 2. **非破坏性操作**：严禁未经用户明确许可物理删除已有数据或覆盖受保护的系统配置。
 3. **防测试篡改铁律 (Anti-Test Tampering)**：严禁在测试红灯时通过放宽断言预期（assert/expect）、删除旧用例、注释断言或标注跳过（skip）来伪造全绿！业务实现必须适配测试，绝不允许削弱测试迁就坏代码。物理检测工具见 `scripts/guard_test_tampering.py`。
 4. **禁止硬编码绝对路径 (No Hardcoded Absolute Paths)**：全仓严禁在源码中写入开发机或特定系统的绝对路径（如 `C:\Users\...`, `/home/...`）。所有文件读写与资源定位必须基于基准路径动态推导（如 `Path(__file__).resolve().parent` / `import.meta.url`）或环境变量注入。检测工具见 `scripts/scan_hardcoded_paths.py`。
-5. **全双语与日夜模式一等公民铁律 (i18n & Theme First-Class)**：
-   - 双语不是渲染期补丁，而是全栈穿透架构（详见 [templates/I18N_AND_THEME_ARCHITECTURE.md](templates/I18N_AND_THEME_ARCHITECTURE.md)）。
-   - 前端严禁裸写未经 `t()` 提取的自然语言字符串（集成 `eslint-plugin-vue-i18n` 或静态汉字扫描强制拦截）；
-   - 字典必须保证键集双向 100% 对齐（Key Parity），漏译物理阻断；
-   - **后端严禁拼接面向人类的自然语言句子**，一律返回结构化错误码 `{"error_code": "CODE", "params": {...}}`；
-   - 日夜模式必须使用语义化 Design Tokens，严禁裸写固定色值，入口必须配置防闪烁 (Zero FOUC) 内联脚本。
+5. **人机交互本地化与视觉规范 (Universal Localization & Visual Theming)**：
+   - **交互本地化（适用一切含用户交互/输出的项目）**：零硬编码自然语言文案；服务端/后端严禁拼接面向人类的自然语言句子，一律返回结构化代码（如 `{"error_code": "CODE", "params": {...}}`）；字典必须保证键集双向 100% 镜像对齐（Key Parity）；纯底层无交互库自动豁免。
+   - **视觉主题（仅适用于包含 GUI/Web/移动端界面的项目，纯 CLI/后端自动豁免）**：必须使用语义化 Design Tokens，严禁组件模板裸写固定色值；入口配置防闪烁 (Zero FOUC) 脚本。详见 [templates/I18N_AND_THEME_ARCHITECTURE.md](templates/I18N_AND_THEME_ARCHITECTURE.md)。
 6. **开源标配组件规范 (Standard Open-Source Deliverables)**：
    - 开源项目必须标配 **[赞助说明 (templates/SPONSOR.md)](templates/SPONSOR.md)** 与 **[常见问题排查 (templates/FAQ.md)](templates/FAQ.md)**，作为项目对外部开发者友好的基础设施。
 7. **交付必须全绿**：改动业务代码后必须主动在后台运行测试，严禁带病提交。
@@ -126,5 +123,5 @@ Starter 采用“通用底座 + 按需扩展”，不要求每个小项目启用
 21. **[历史即公开面]**：凭证一旦被提交，即使后续 commit 删除，**旧提交里依然是明文**。确认泄露时必须改写历史（`git filter-repo --replace-text`），而不是补一个删除提交。
 22. **[1 变 4 根因发散协议]**：用户反馈 Bug 或提出对抗性审查时，必须针对每个问题点联想横向同类、边界逆向、前后端契约、持久化生命周期 4 类共生 Bug 并列出验证证据。
 23. **[绝对路径零容忍]**：严禁硬编码本机文件系统绝对路径，一律使用动态计算相对路径或环境变量。
-24. **[全双语物理门禁]**：严禁伪双语打补丁；前端禁止裸文本，后端禁止拼接自然语言，字典必须双向对齐且受门禁物理守卫。
+24. **[通用多语言门禁]**：严禁伪双语打补丁；交互层禁止裸写自然语言文案，服务端禁止拼接人类可读句子，字典必须双向对齐受门禁守卫；纯算法/无交互项目自动豁免。
 25. **[开源标准交付物]**：开源项目设计时必须自带 SPONSOR.md 赞助模版与 FAQ.md 排查指南。

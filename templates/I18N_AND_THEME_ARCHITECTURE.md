@@ -1,115 +1,60 @@
-# 全生命周期全双语与主题设计工程法则 (I18N & Theme Architecture)
+# 全生命周期本地化与视觉主题工程架构规约 (Localization & Theme Architecture)
 
-> 💡 **核心哲学**：双语（i18n）与主题（Theme）不是渲染期的“字符串翻译表”或“局部样式补丁”，而是贯穿全栈数据流、API 契约、状态管理与 CI 门禁的**一等公民（First-Class Dimension）**。
-> 任何依赖开发者或 AI “自觉遵守”的双语体系终将退化腐烂，必须依靠**开源工具链的物理拦截与类型约束**确保一劳永逸。
-
----
-
-## 🌓 第一部分：日夜主题切换法则 (Theme Architecture)
-
-### 1. 三大约束原则
-1. **单一真理源 (Single Source of Truth)**：
-   - 全局支持 `light` | `dark` | `system` 三种状态，由单例 Composable / Store 统一管理；
-   - 偏好自动同步至持久化存储（`localStorage`）并派发给根节点（`<html class="dark">` 或 `data-theme` 属性）。
-2. **语义化 Design Token，严禁裸写固定颜色**：
-   - 严禁在组件模板中裸写 `#ffffff`、`#1e1e1e` 或非语义类名 `bg-white`；
-   - 必须通过 CSS 变量或 Tailwind 语义化 Token（如 `bg-surface-primary`, `text-primary`, `border-muted`）定义。深色适配应由全局变量自动响应，新写组件默认自适应。
-3. **零闪烁白屏防御 (Zero FOUC - Flash of Unstyled Content)**：
-   - 在 SPA 入口页面的 `<head>` 中必须内联极简脚本：
-   ```html
-   <script>
-     (function() {
-       try {
-         var t = localStorage.getItem('app_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-         if (t === 'dark') document.documentElement.classList.add('dark');
-       } catch (e) {}
-     })();
-   </script>
-   ```
+> 💡 **核心哲学**：本地化（i18n）与主题（Theme）不是渲染期的“局部补丁”，而是贯穿人机交互、数据流、服务契约与 CI 门禁的**一等公民（First-Class Dimension）**。
+> 本规约定义了**通用跨栈核心模型**，并提供针对 Web、CLI、后端服务的按需适配器。纯算法库或无交互组件自动豁免。
 
 ---
 
-## 🌐 第二部分：全双语五层穿透法则 (i18n Architecture)
+## 🌐 第一部分：通用本地化五层模型 (Universal Localization Model)
 
-### 1. 五层穿透架构模型
+无论项目采用何种语言或技术栈，只要存在用户交互输出，均遵循以下 5 层契约：
+
 ```mermaid
 flowchart TD
-    A["① 顶层状态与排版层 (useLocale + html lang)"] --> B["② 前端纯净文案层 (Zero Raw Text + t(key))"]
-    B --> C["③ API 通信契约层 (Accept-Language + 结构化错误码)"]
-    C --> D["④ 领域数据与持久化层 (枚举 Code 化 + 内容多语言 Fallback + AI 穿透)"]
-    D --> E["⑤ 自动化防腐门禁 (ESLint no-raw-text + 字典 Key 双向对齐 CI)"]
+    A["① 状态层 (Locale State / --lang)"] --> B["② 展示层 (Zero Hardcoded Raw Text + 字典查表)"]
+    B --> C["③ 通信/服务层 (Accept-Language / 结构化错误码)"]
+    C --> D["④ 领域数据层 (枚举 Code 化 + 多语言回退链 + AI 穿透)"]
+    D --> E["⑤ 物理防腐门禁 (字典 Key 100% 双向对齐 + 静态无死文案扫描)"]
 ```
 
-### 2. 逐层设计规约
-
-#### ① 顶层状态与排版层
-- 语言状态（如 `zh-CN`, `en-US`）必须实时同步至 `<html lang="zh-CN">`；
-- **排版防御预算**：英语等拉丁语系文字通常比中文多占用 30%~50% 水平宽度，禁止将按钮、输入框、表头宽度硬编码为固定像素；必须具备流式弹性与折行/省略容错。
-
-#### ② 前端纯净文案层
-- 前端页面**严禁裸写任何自然语言字符串**；
-- 所有展示文案必须统一通过翻译函数 `t('module.entity.action')` 提取；
-- 语言包推荐采用模块化 JSON 字典组织：
-  - `locales/zh-CN.json`（主语言真理源）
-  - `locales/en-US.json`（目标语言真理源）
-- 若运行时缺少对应 key，降级回退显示 key 本身，并在开发环境输出警告。
-
-#### ③ API 契约层（核心防返工红线）
-1. **统一标头**：前端全局 HTTP Client（Axios / Fetch / Ky）在发起每个请求时必须携带标头：
-   ```http
-   Accept-Language: zh-CN,en-US;q=0.9
-   ```
-2. **后端严禁拼接面向人类的自然语言句子！**
-   - ❌ **绝对禁止**：`raise HTTPException(detail="用户不存在或密码错误")`
-   - ✅ **强制要求**：返回结构化错误码与元数据参数：
-     ```json
-     {
-       "error_code": "AUTH_INVALID_CREDENTIALS",
-       "message": "Invalid username or password",
-       "params": { "field": "username" }
-     }
-     ```
-   - 页面由前端根据 `error_code` 在字典中查表翻译展示。这从根本上杜绝了“前端切了英文，后端报错弹窗全出中文”的灾难。
-3. **日期/时间/货币裸数据化**：后端统一返回标准 ISO-8601 UTC 字符串或纯数值，前端统一使用 `Intl.DateTimeFormat` / `Intl.NumberFormat` 进行本地化渲染。
-
-#### ④ 领域数据与 AI 层
-- **系统枚举入库**：数据库中存储的状态、类型必须是英文 code（如 `in_progress`, `approved`, `single_choice`），严禁向持久化字段写入中文枚举；
-- **内容多语言降级链 (Fallback Chain)**：业务内容（如商品名称、文章标题）按 `target_locale -> default_locale -> raw` 链路降级展示；
-- **AI 提示词穿透**：所有调用大模型生成文本的 Prompt 中，必须将用户当前的 `locale` 作为入参透传，并在 System Prompt 强制要求：“Respond strictly in {target_language}”。
+### 1. 通用核心法则（跨语言、跨技术栈 100% 通用）
+1. **零硬编码自然语言 (Zero Hardcoded Raw Strings)**：
+   - 核心业务逻辑中**严禁散落面向人类的硬编码自然语言**；所有提示文案、界面文本必须通过模块化字典或语言包管理（如 `locales/zh-CN.json` 与 `locales/en-US.json`）；
+2. **服务端/后端严禁拼接人类自然语言**：
+   - 接口错误与提示必须返回结构化状态码与参数：`{"error_code": "RESOURCE_NOT_FOUND", "params": {"id": 123}}`，由前端或客户端查字典翻译，杜绝前后端语言撕裂；
+3. **字典键双向 100% 对齐门禁 (Key Parity)**：
+   - 主语言与所有目标语言的字典键集必须完全一致，任何新增或漏译必须被自动化测试拦截阻断；
+4. **纯裸数据传递**：
+   - 时间一律返回标准 ISO-8601 UTC，数字与货币返回纯数值，由展示层调用各环境标准的本地化格式化工具（如 JavaScript `Intl`、Python `babel`、Rust `fluent`）渲染。
 
 ---
 
-## 🛡️ 第三部分：工具链物理强制（开源武器库）
+## 🌓 第二部分：视觉主题法则（仅适用于 GUI / Web / 移动端）
 
-依靠人脑自觉必将失败，必须在项目中配置自动化物理门禁：
+> 💡 *注：命令行 CLI 工具、纯后端微服务、离线计算任务自动豁免本部分。*
 
-### 1. Vue/前端：ESLint 拦截裸文字
-在前端 `eslint.config.js` 或 `.eslintrc.js` 中集成 `eslint-plugin-vue-i18n`：
-```javascript
-// 开启裸文本检测，一旦模板中出现非 t() 翻译的硬编码字符直接报错中断构建
-rules: {
-  'vue-i18n/no-raw-text': ['error', {
-    attributes: {
-      '/.+/': ['title', 'placeholder', 'aria-label', 'alt']
-    },
-    ignoreNodes: ['el-icon', 'svg'],
-    ignorePattern: '^[-#:()\\/\\s0-9]+$'
-  }]
-}
-```
+1. **单一真理源**：
+   - 统一由顶层管理 `light` | `dark` | `system`，持久化并派发给根渲染容器；
+2. **语义化 Design Tokens，严禁裸写固定色值**：
+   - 界面组件严禁写死 `#ffffff`、`#000000`；所有背景、文字、边框必须通过语义变量（如 `surface-primary`, `text-main`）定义，自动响应日夜切换；
+3. **零闪烁白屏防御 (Zero FOUC)**：
+   - 具有 Web / DOM 渲染环境的工程，必须在首屏渲染前尽早读取偏好并锁定根类名，杜绝样式渲染延迟导致的闪烁。
 
-### 2. 自动化字典双向对齐与漏译门禁 (Key Parity Gate)
-在 CI 中运行全量键集比对脚本。以下为 Python / Node.js 通用的检查逻辑原则：
-```python
-# 确保 zh-CN 和 en-US 字典树的所有 key 完全 1:1 对齐
-def test_locale_keys_parity():
-    zh_keys = extract_all_keys("locales/zh-CN.json")
-    en_keys = extract_all_keys("locales/en-US.json")
-    
-    missing_in_en = zh_keys - en_keys
-    missing_in_zh = en_keys - zh_keys
-    
-    assert not missing_in_en, f"en-US.json 缺少以下键: {missing_in_en}"
-    assert not missing_in_zh, f"zh-CN.json 缺少以下键: {missing_in_zh}"
-```
-任何一次功能迭代，只要开发者或 AI 新增了中文却漏了英文，或者删除了使用点却残留废弃 key，**门禁当场爆红，物理拒绝合入**！
+---
+
+## 🛠️ 第三部分：分端适配器指引（按需选用）
+
+### 1. Web 前端项目适配（Vue / React / Svelte / Native）
+- **文案提取**：使用 `t('module.key')`；
+- **静态扫描门禁**：
+  - Vue 项目推荐集成 `eslint-plugin-vue-i18n` 开启 `no-raw-text: error`；
+  - React 项目推荐集成 `eslint-plugin-i18next`；
+  - 或配置通用汉字正则扫描测试脚本，对模板目录进行静态断言。
+
+### 2. CLI 命令行项目适配（Python / Go / Rust / Node CLI）
+- **参数控制**：统一支持 `--lang [zh|en]` 参数及读取 `LANG` 环境变量；
+- **输出格式**：控制台输出统一通过内部国际化 catalog 格式化打印，严禁在执行函数中 `print("中文错误")`。
+
+### 3. 纯后端与 API 项目适配（FastAPI / Spring / Express / Gin）
+- **标头识别**：全局中间件解析 HTTP `Accept-Language` 标头；
+- **异常契约**：统一抛出继承自结构化异常基类的错误码对象，严禁直接返回面向人类的纯中文字符串。

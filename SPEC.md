@@ -102,17 +102,18 @@ flowchart LR
 
 ---
 
-## 7. 全生命周期全双语与暗黑主题契约 (i18n & Theme First-Class Contract)
+## 7. 人机交互本地化与视觉主题契约 (Localization & Visual Theming Contract)
 
-> 💡 **设计红线**：双语与主题不是渲染期后补的字典或样式修饰，而是贯穿全栈数据流、API 契约、状态管理与 CI 门禁的**一等公民（First-Class Dimension）**（详见 `templates/I18N_AND_THEME_ARCHITECTURE.md`）：
+> 💡 **设计红线**：只要项目包含用户文案交互或视觉界面，本地化与主题必须作为**一等公民（First-Class Dimension）**设计（纯无交互底层算法库自动豁免；详见 `templates/I18N_AND_THEME_ARCHITECTURE.md`）：
 
-1. **全双语五层穿透规则**：
-   - **零裸文本**：前端或 CLI 界面严禁裸写未经 `t()` 包裹的自然语言字符串；
-   - **后端禁拼自然语言**：后端接口一律返回结构化错误码与元数据（`{"error_code": "...", "params": {...}}`），由前端查字典翻译；全局请求自动携带 `Accept-Language`；
+1. **通用本地化规则（适用一切含用户交互/输出的项目）**：
+   - **零裸文本**：交互界面或命令行输出严禁裸写硬编码自然语言，统一通过语言字典管理；
+   - **服务端禁拼自然语言**：接口一律返回结构化错误码与元数据（`{"error_code": "...", "params": {...}}`），由展示层查字典翻译；全局请求自动携带 `Accept-Language`；
    - **字典键双向对齐 (Key Parity)**：`locales/zh-CN.json` 与 `locales/en-US.json` 键集必须 100% 镜像对齐，物理门禁拦截任何漏译；
-   - **排版弹性**：UI 必须预留至少 30%~50% 水平伸缩预算，严禁硬编码固定像素导致英文折行爆裂。
-2. **日夜模式与 Design Tokens**：
-   - **单一真理源**：全局统一管理 `light` | `dark` | `system`，持久化并派发到 DOM 根节点；
-   - **语义化 Design Tokens**：严禁裸写固定色值，全部通过 CSS 变量或 Tailwind 语义类名自适应；
-   - **防闪烁 (Zero FOUC)**：入口 HTML 必须内联早期主题注入脚本，杜绝水合前白屏闪烁。
+   - **排版弹性**：具备视图的项目必须预留至少 30%~50% 水平伸缩预算，严禁硬编码固定像素导致多语言文字折行爆裂。
+2. **日夜模式与 Design Tokens（仅适用于包含 GUI/Web/移动端项目）**：
+   - **单一真理源**：全局统一管理 `light` | `dark` | `system`，持久化并派发到根渲染容器；
+   - **语义化 Design Tokens**：严禁裸写固定色值，全部通过语义变量定义并自适应；
+   - **防闪烁 (Zero FOUC)**：Web/DOM 环境必须在入口内联早期主题注入脚本，杜绝渲染前白屏闪烁。
+
 
